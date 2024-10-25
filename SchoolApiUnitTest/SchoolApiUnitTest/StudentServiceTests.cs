@@ -1,9 +1,9 @@
 using AutoMapper;
 using Moq;
-using SchoolAPI.DTO;
-using SchoolAPI.Models;
-using SchoolAPI.Repository;
-using SchoolAPI.Service;
+using SchoolApi.Core.DTO;
+using SchoolApi.Core.Models;
+using SchoolApi.Core.Repository;
+using SchoolApi.Core.Service;
 
 namespace SchoolApiUnitTest
 {

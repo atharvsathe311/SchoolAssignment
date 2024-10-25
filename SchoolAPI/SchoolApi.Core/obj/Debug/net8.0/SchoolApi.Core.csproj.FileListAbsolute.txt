@@ -1,0 +1,15 @@
+D:\Aurionpro\SchoolAssignment\SchoolAPI\SchoolApi.Core\bin\Debug\net8.0\SchoolApi.Core.deps.json
+D:\Aurionpro\SchoolAssignment\SchoolAPI\SchoolApi.Core\bin\Debug\net8.0\SchoolApi.Core.runtimeconfig.json
+D:\Aurionpro\SchoolAssignment\SchoolAPI\SchoolApi.Core\bin\Debug\net8.0\SchoolApi.Core.dll
+D:\Aurionpro\SchoolAssignment\SchoolAPI\SchoolApi.Core\bin\Debug\net8.0\SchoolApi.Core.pdb
+D:\Aurionpro\SchoolAssignment\SchoolAPI\SchoolApi.Core\obj\Debug\net8.0\SchoolApi.Core.csproj.AssemblyReference.cache
+D:\Aurionpro\SchoolAssignment\SchoolAPI\SchoolApi.Core\obj\Debug\net8.0\SchoolApi.Core.GeneratedMSBuildEditorConfig.editorconfig
+D:\Aurionpro\SchoolAssignment\SchoolAPI\SchoolApi.Core\obj\Debug\net8.0\SchoolApi.Core.AssemblyInfoInputs.cache
+D:\Aurionpro\SchoolAssignment\SchoolAPI\SchoolApi.Core\obj\Debug\net8.0\SchoolApi.Core.AssemblyInfo.cs
+D:\Aurionpro\SchoolAssignment\SchoolAPI\SchoolApi.Core\obj\Debug\net8.0\SchoolApi.Core.csproj.CoreCompileInputs.cache
+D:\Aurionpro\SchoolAssignment\SchoolAPI\SchoolApi.Core\obj\Debug\net8.0\SchoolApi.Core.sourcelink.json
+D:\Aurionpro\SchoolAssignment\SchoolAPI\SchoolApi.Core\obj\Debug\net8.0\SchoolApi.Core.dll
+D:\Aurionpro\SchoolAssignment\SchoolAPI\SchoolApi.Core\obj\Debug\net8.0\refint\SchoolApi.Core.dll
+D:\Aurionpro\SchoolAssignment\SchoolAPI\SchoolApi.Core\obj\Debug\net8.0\SchoolApi.Core.pdb
+D:\Aurionpro\SchoolAssignment\SchoolAPI\SchoolApi.Core\obj\Debug\net8.0\SchoolApi.Core.genruntimeconfig.cache
+D:\Aurionpro\SchoolAssignment\SchoolAPI\SchoolApi.Core\obj\Debug\net8.0\ref\SchoolApi.Core.dll

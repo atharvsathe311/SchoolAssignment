@@ -1,8 +1,8 @@
 ﻿using FluentValidation;
 using Microsoft.AspNetCore.Mvc;
-using SchoolAPI.DTO;
+using SchoolApi.Core.DTO;
 using SchoolAPI.Extensions;
-using SchoolAPI.Service;
+using SchoolApi.Core.Service;
 
 
 namespace SchoolAPI.Controllers

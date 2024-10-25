@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "FnhqVpgfBEo=",
+  "dgSpecHash": "Tzs8/5vP1z0=",
   "success": true,
-  "projectFilePath": "D:\\Aurionpro\\SchoolAPI\\SchoolAPI\\SchoolAPI.csproj",
+  "projectFilePath": "D:\\Aurionpro\\SchoolAssignment\\SchoolAPI\\SchoolAPI\\SchoolAPI.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\atharv.sathe\\.nuget\\packages\\automapper\\12.0.1\\automapper.12.0.1.nupkg.sha512",
     "C:\\Users\\atharv.sathe\\.nuget\\packages\\automapper.extensions.microsoft.dependencyinjection\\12.0.1\\automapper.extensions.microsoft.dependencyinjection.12.0.1.nupkg.sha512",

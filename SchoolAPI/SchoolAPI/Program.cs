@@ -1,12 +1,9 @@
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
-using MySql.Data.MySqlClient;
-using SchoolAPI.Data;
-using SchoolAPI.DTO;
-using SchoolAPI.Helper;
-using SchoolAPI.Models;
-using SchoolAPI.Repository;
-using SchoolAPI.Service;
+using SchoolApi.Core.Data;
+using SchoolApi.Core.Helper;
+using SchoolApi.Core.Repository;
+using SchoolApi.Core.Service;
 using SchoolAPI.Validators;
 
 var builder = WebApplication.CreateBuilder(args);
