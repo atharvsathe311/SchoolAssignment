@@ -2,6 +2,7 @@
 using SchoolApi.Core.DTO;
 using SchoolApi.Core.Models;
 using SchoolApi.Core.Repository;
+using SchoolApi.Core.Constants;
 
 namespace SchoolApi.Core.Service
 {
@@ -43,42 +44,42 @@ namespace SchoolApi.Core.Service
 
         public async Task<StudentGetDTO> GetStudentByIdAsync(int studentId)
         {
-            var student = await _studentRepository.GetStudentByIdAsync(studentId) ?? throw new Exception("Student Not Found");
+            var student = await _studentRepository.GetStudentByIdAsync(studentId) ?? throw new Exception(ErrorMessages.STUDENT_NOT_FOUND);
             StudentGetDTO result = _mapper.Map<StudentGetDTO>(student);
             return result;
         }
 
-        public async Task<StudentGetDTO> UpdateStudentAsync(int id, StudentPostDTO studentPostDTO)
+        public async Task<StudentGetDTO> UpdateStudentAsync(int id, StudentUpdateDTO studentPostDTO)
         {
-            var student = await _studentRepository.GetStudentByIdAsync(id) ?? throw new Exception("Student Not Found");
+            var student = await _studentRepository.GetStudentByIdAsync(id) ?? throw new Exception(ErrorMessages.STUDENT_NOT_FOUND);
             bool isUpdated = false;
 
-            if (student.FirstName != studentPostDTO.FirstName)
+            if (!string.IsNullOrEmpty(studentPostDTO.FirstName))
             {
                 student.FirstName = studentPostDTO.FirstName;
                 isUpdated = true;
             }
 
-            if (student.LastName != studentPostDTO.LastName)
+            if (!string.IsNullOrEmpty(studentPostDTO.LastName))
             {
                 student.LastName = studentPostDTO.LastName;
                 isUpdated = true;
             }
 
-            if (student.BirthDate != studentPostDTO.BirthDate)
+            if (studentPostDTO.BirthDate.HasValue)
             {
-                student.BirthDate = studentPostDTO.BirthDate;
-                student.Age = GetAge(studentPostDTO.BirthDate);
+                student.BirthDate = (DateTime)studentPostDTO.BirthDate;
+                student.Age = GetAge((DateTime)studentPostDTO.BirthDate);
                 isUpdated = true;
             }
 
-            if (student.Email != studentPostDTO.Email)
+            if (!string.IsNullOrEmpty(studentPostDTO.Email))
             {
                 student.Email = studentPostDTO.Email;
                 isUpdated = true;
             }
 
-            if (student.Phone != studentPostDTO.Phone)
+            if (!string.IsNullOrEmpty(studentPostDTO.Phone))
             {
                 student.Phone = studentPostDTO.Phone;
                 isUpdated = true;
@@ -99,7 +100,7 @@ namespace SchoolApi.Core.Service
 
         public async Task DeleteStudentAsync(int studentId)
         {
-            var student = await _studentRepository.GetStudentByIdAsync(studentId) ?? throw new Exception("Student Not Found");
+            var student = await _studentRepository.GetStudentByIdAsync(studentId) ?? throw new Exception(ErrorMessages.STUDENT_NOT_FOUND);
 
             student.IsActive = false;
             student.Updated = DateTime.Now;

@@ -9,7 +9,7 @@ namespace SchoolApi.Core.Service
         Task<StudentGetDTO> CreateStudentAsync(StudentPostDTO studentPostDTO);
         Task<object> GetAllStudentAsync(int page, int pageSize, string searchTerm);
         Task<StudentGetDTO> GetStudentByIdAsync(int studentId);
-        Task<StudentGetDTO> UpdateStudentAsync(int id, StudentPostDTO studentPostDTO);
+        Task<StudentGetDTO> UpdateStudentAsync(int id, StudentUpdateDTO studentPostDTO);
         Task DeleteStudentAsync(int studentId);
 
     }

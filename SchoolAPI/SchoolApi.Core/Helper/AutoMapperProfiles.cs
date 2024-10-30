@@ -10,6 +10,7 @@ namespace SchoolApi.Core.Helper
         {
             CreateMap<Student, StudentPostDTO>().ReverseMap();
             CreateMap<Student, StudentGetDTO>().ReverseMap();
+            CreateMap<Student, StudentUpdateDTO>().ReverseMap();
 
         }
     }

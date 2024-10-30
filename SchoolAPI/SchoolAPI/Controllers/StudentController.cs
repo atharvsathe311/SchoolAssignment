@@ -1,7 +1,5 @@
-﻿using FluentValidation;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using SchoolApi.Core.DTO;
-using SchoolAPI.Extensions;
 using SchoolApi.Core.Service;
 
 
@@ -13,97 +11,45 @@ namespace SchoolAPI.Controllers
     {
 
         private readonly IStudentService _studentService;
-        private readonly IValidator<StudentPostDTO> _validator;
-        public StudentController(IStudentService studentService, IValidator<StudentPostDTO> validator)
+
+        public StudentController(IStudentService studentService)
         {
             _studentService = studentService;
-            _validator = validator;
         }
 
         [HttpPost("NewStudent")]
         public async Task<IActionResult> Post([FromBody] StudentPostDTO studentPostDTO)
         {
-            var studentValidator = await _validator.ValidateAsync(studentPostDTO);
-            if (!studentValidator.IsValid)
-            {
-                studentValidator.AddToModelState(ModelState);
-                return UnprocessableEntity(ModelState);
-            }
-
-            try
-            {
-                var student = await _studentService.CreateStudentAsync(studentPostDTO);
-                return Ok(student);
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
-            }
-
+            var student = await _studentService.CreateStudentAsync(studentPostDTO);
+            return Ok(student);
         }
 
         [HttpGet("GetAllStudent")]
         public async Task<IActionResult> GetAllStudentAsync(int page = 1, int pageSize = 10, string searchTerm = "")
         {
-            try
-            {
-                var result = await _studentService.GetAllStudentAsync(page, pageSize, searchTerm);
-                return Ok(result);
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, $"Internal server error: {ex.Message}");
-            }
-
+            var result = await _studentService.GetAllStudentAsync(page, pageSize, searchTerm);
+            return Ok(result);
         }
 
         [HttpGet("GetStudentById/{id}")]
         public async Task<IActionResult> GetStudentById(int id)
         {
-            try
-            {
-                StudentGetDTO student = await _studentService.GetStudentByIdAsync(id);
-                return Ok(student);
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
-            }
+            StudentGetDTO student = await _studentService.GetStudentByIdAsync(id);
+            return Ok(student);
         }
 
         [HttpPut("UpdateStudent/{id}")]
-        public async Task<IActionResult> Put(int id, [FromBody] StudentPostDTO studentPostDTO)
+        public async Task<IActionResult> Put(int id, [FromBody] StudentUpdateDTO studentPostDTO)
         {
-            var studentValidator = await _validator.ValidateAsync(studentPostDTO);
-            if (!studentValidator.IsValid)
-            {
-                studentValidator.AddToModelState(ModelState);
-                return UnprocessableEntity(ModelState);
-            }
-
-            try
-            {
-                var student = await _studentService.UpdateStudentAsync(id, studentPostDTO);
-                return Ok(student);
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
-            }
+            var student = await _studentService.UpdateStudentAsync(id, studentPostDTO);
+            return Ok(student);
         }
 
         [HttpDelete("DeleteStudent/{id}")]
         public async Task<IActionResult> Delete(int id)
         {
-            try
-            {
-                await _studentService.DeleteStudentAsync(id);
-                return Ok();
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
-            }
+            await _studentService.DeleteStudentAsync(id);
+            return Ok();
         }
 
     }
