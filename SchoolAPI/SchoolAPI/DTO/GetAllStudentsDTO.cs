@@ -1,4 +1,4 @@
-namespace SchoolApi.Core.DTO
+namespace SchoolAPI.DTO
 {
     public class GetAllStudentsDTO
     {

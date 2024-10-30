@@ -1,8 +1,8 @@
 ﻿using AutoMapper;
-using SchoolApi.Core.DTO;
+using SchoolAPI.DTO;
 using SchoolApi.Core.Models;
 
-namespace SchoolApi.Core.Helper
+namespace SchoolAPI.Helper
 {
     public class AutoMapperProfiles : Profile
     {
@@ -11,8 +11,6 @@ namespace SchoolApi.Core.Helper
             CreateMap<Student, StudentPostDTO>().ReverseMap();
             CreateMap<Student, StudentGetDTO>().ReverseMap();
             CreateMap<Student, StudentUpdateDTO>().ReverseMap();
-            
-
         }
     }
 }

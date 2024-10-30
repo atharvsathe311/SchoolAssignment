@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using SchoolApi.Core.Constants;
-using SchoolApi.Core.DTO;
+using SchoolAPI.DTO;
 using SchoolApi.Core.Models;
 using SchoolApi.Core.Repository;
 using SchoolApi.Core.Service;
@@ -27,7 +27,7 @@ namespace SchoolAPI.Controllers
         public async Task<IActionResult> Post([FromBody] StudentPostDTO studentPostDTO)
         {
             var student = _mapper.Map<Student>(studentPostDTO);
-            student.Age = _studentService.GetAge(student.BirthDate);
+            student.Age = _studentService.GetAge(studentPostDTO.BirthDate);
             student.Created = DateTime.Now;
             student.Updated = DateTime.Now;
             student.IsActive = true;
@@ -60,7 +60,8 @@ namespace SchoolAPI.Controllers
         [HttpPut("/updatestudent/")]
         public async Task<IActionResult> Put([FromBody] StudentUpdateDTO studentUpdateDTO)
         {
-            var updatedStudent = await _studentRepository.UpdateStudentAsync(studentUpdateDTO) ?? throw new Exception(ErrorMessages.STUDENT_UPDATE_FAILED);
+            var student = _mapper.Map<Student>(studentUpdateDTO);
+            var updatedStudent = await _studentRepository.UpdateStudentAsync(student) ?? throw new Exception(ErrorMessages.STUDENT_UPDATE_FAILED);
             var studentDTO = _mapper.Map<StudentGetDTO>(updatedStudent);
             return Ok(studentDTO);
         }

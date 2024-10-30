@@ -2,10 +2,10 @@ using FluentValidation;
 using FluentValidation.AspNetCore;
 using Microsoft.EntityFrameworkCore;
 using SchoolApi.Core.Data;
-using SchoolApi.Core.Helper;
+using SchoolApi.Core.GlobalException;
+using SchoolAPI.Helper;
 using SchoolApi.Core.Repository;
 using SchoolApi.Core.Service;
-using SchoolAPI.GlobalException;
 
 var builder = WebApplication.CreateBuilder(args);
 

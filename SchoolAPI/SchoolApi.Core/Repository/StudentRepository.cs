@@ -2,7 +2,6 @@
 using SchoolApi.Core.Data;
 using Microsoft.EntityFrameworkCore;
 using SchoolApi.Core.Constants;
-using SchoolApi.Core.DTO;
 using SchoolApi.Core.Service;
 
 namespace SchoolApi.Core.Repository
@@ -59,7 +58,7 @@ namespace SchoolApi.Core.Repository
             return student ;
         }
 
-        public async Task<Student> UpdateStudentAsync(StudentUpdateDTO student)
+        public async Task<Student> UpdateStudentAsync(Student student)
         {
             var oldStudent = await GetStudentByIdAsync(student.StudentId) ?? throw new Exception(ErrorMessages.STUDENT_NOT_FOUND);
             bool isUpdated = false;

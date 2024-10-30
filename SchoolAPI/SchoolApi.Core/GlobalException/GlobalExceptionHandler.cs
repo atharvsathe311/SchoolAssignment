@@ -1,7 +1,9 @@
 using System.Net;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Logging;
 using SchoolApi.Core.Models;
 
-namespace SchoolAPI.GlobalException
+namespace SchoolApi.Core.GlobalException
 {
     public class GlobalExceptionHandler:IMiddleware
     {
