@@ -1,7 +1,10 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Mvc;
+using SchoolApi.Core.Constants;
 using SchoolApi.Core.DTO;
+using SchoolApi.Core.Models;
+using SchoolApi.Core.Repository;
 using SchoolApi.Core.Service;
-
 
 namespace SchoolAPI.Controllers
 {
@@ -9,48 +12,64 @@ namespace SchoolAPI.Controllers
     [ApiController]
     public class StudentController : ControllerBase
     {
-
         private readonly IStudentService _studentService;
+        private readonly IStudentRepository _studentRepository;
+        private readonly IMapper _mapper;
 
-        public StudentController(IStudentService studentService)
+        public StudentController(IStudentService studentService,IStudentRepository studentRepository, IMapper mapper)
         {
             _studentService = studentService;
+            _studentRepository = studentRepository;
+            _mapper = mapper;
         }
 
-        [HttpPost("NewStudent")]
+        [HttpPost("/newstudent")]
         public async Task<IActionResult> Post([FromBody] StudentPostDTO studentPostDTO)
         {
-            var student = await _studentService.CreateStudentAsync(studentPostDTO);
-            return Ok(student);
+            var student = _mapper.Map<Student>(studentPostDTO);
+            student.Age = _studentService.GetAge(student.BirthDate);
+            student.Created = DateTime.Now;
+            student.Updated = DateTime.Now;
+            student.IsActive = true;
+
+            var createdStudent = await _studentRepository.CreateStudentAsync(student) ?? throw new Exception(ErrorMessages.STUDENT_CREATE_FAILED);
+            var newStudentDTO = _mapper.Map<StudentGetDTO>(createdStudent);
+            return Ok(newStudentDTO);
         }
 
-        [HttpGet("GetAllStudent")]
+        [HttpGet("/getallstudents")]
         public async Task<IActionResult> GetAllStudentAsync(int page = 1, int pageSize = 10, string searchTerm = "")
         {
-            var result = await _studentService.GetAllStudentAsync(page, pageSize, searchTerm);
-            return Ok(result);
+            var (studentList , count) = await _studentRepository.GetAllStudentAsync(page, pageSize, searchTerm);
+            IEnumerable<StudentGetDTO> newStudentList = _mapper.Map<IEnumerable<StudentGetDTO>>(studentList);
+            GetAllStudentsDTO getAllStudents = new() {
+                StudentList = newStudentList,
+                TotalCount = count
+            }; 
+            return Ok(getAllStudents);
         }
 
-        [HttpGet("GetStudentById/{id}")]
+        [HttpGet("/getstudentbyid/{id}")]
         public async Task<IActionResult> GetStudentById(int id)
         {
-            StudentGetDTO student = await _studentService.GetStudentByIdAsync(id);
-            return Ok(student);
+            var student = await _studentRepository.GetStudentByIdAsync(id);
+            var studentDTO = _mapper.Map<StudentGetDTO>(student);
+            return Ok(studentDTO);
         }
 
-        [HttpPut("UpdateStudent/{id}")]
-        public async Task<IActionResult> Put(int id, [FromBody] StudentUpdateDTO studentPostDTO)
+        [HttpPut("/updatestudent/")]
+        public async Task<IActionResult> Put([FromBody] StudentUpdateDTO studentUpdateDTO)
         {
-            var student = await _studentService.UpdateStudentAsync(id, studentPostDTO);
-            return Ok(student);
+            var updatedStudent = await _studentRepository.UpdateStudentAsync(studentUpdateDTO) ?? throw new Exception(ErrorMessages.STUDENT_UPDATE_FAILED);
+            var studentDTO = _mapper.Map<StudentGetDTO>(updatedStudent);
+            return Ok(studentDTO);
         }
 
         [HttpDelete("DeleteStudent/{id}")]
         public async Task<IActionResult> Delete(int id)
         {
-            await _studentService.DeleteStudentAsync(id);
+            await _studentRepository.DeleteStudentAsync(id);
             return Ok();
         }
-
     }
 }

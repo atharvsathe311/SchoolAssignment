@@ -1,8 +1,4 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net;
-using System.Threading.Tasks;
 using SchoolApi.Core.Models;
 
 namespace SchoolAPI.GlobalException
@@ -38,7 +34,7 @@ namespace SchoolAPI.GlobalException
             var errorDetails = new ErrorDetails()
             {
                 TraceId = traceId,
-                Message = "Internal Server Error from the custom middleware.",
+                Message = "Internal Server Error!",
                 StatusCode = context.Response.StatusCode,
                 Instance = context.Request.Path,
                 ExceptionMessage = exception.Message

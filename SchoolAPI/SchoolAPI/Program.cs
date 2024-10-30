@@ -5,7 +5,7 @@ using SchoolApi.Core.Data;
 using SchoolApi.Core.Helper;
 using SchoolApi.Core.Repository;
 using SchoolApi.Core.Service;
-using SchoolAPI.Validators;
+using SchoolAPI.GlobalException;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -24,6 +24,8 @@ builder.Services.AddScoped<IStudentService, StudentService>();
 builder.Services.AddScoped<IStudentRepository, StudentRepository>();
 builder.Services.AddFluentValidationAutoValidation();
 builder.Services.AddValidatorsFromAssemblyContaining<Program>();
+
+builder.Services.AddTransient<GlobalExceptionHandler>();
 
 builder.Services.AddCors(options =>
 {
@@ -49,6 +51,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+app.UseMiddleware<GlobalExceptionHandler>();
 
 app.UseHttpsRedirection();
 
