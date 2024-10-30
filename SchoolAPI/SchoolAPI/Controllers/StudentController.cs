@@ -1,10 +1,11 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
-using SchoolApi.Core.Constants;
+using SchoolAPI.Constants;
 using SchoolAPI.DTO;
 using SchoolApi.Core.Models;
 using SchoolApi.Core.Repository;
 using SchoolApi.Core.Service;
+using SchoolAPI.Exceptions;
 
 namespace SchoolAPI.Controllers
 {
@@ -23,10 +24,16 @@ namespace SchoolAPI.Controllers
             _mapper = mapper;
         }
 
-        [HttpPost("/newstudent")]
-        public async Task<IActionResult> Post([FromBody] StudentPostDTO studentPostDTO)
+        [HttpPost]
+        public async Task<IActionResult> Post(StudentPostDTO studentPostDTO)
         {
             var student = _mapper.Map<Student>(studentPostDTO);
+
+            bool duplicateCheck = await _studentRepository.DuplicateEntriesChecker(student);
+
+            if (duplicateCheck)
+                throw new Exception(ErrorMessages.STUDENT_EXISTS);
+
             student.Age = _studentService.GetAge(studentPostDTO.BirthDate);
             student.Created = DateTime.Now;
             student.Updated = DateTime.Now;
@@ -37,7 +44,7 @@ namespace SchoolAPI.Controllers
             return Ok(newStudentDTO);
         }
 
-        [HttpGet("/getallstudents")]
+        [HttpGet]
         public async Task<IActionResult> GetAllStudentAsync(int page = 1, int pageSize = 10, string searchTerm = "")
         {
             var (studentList , count) = await _studentRepository.GetAllStudentAsync(page, pageSize, searchTerm);
@@ -49,27 +56,71 @@ namespace SchoolAPI.Controllers
             return Ok(getAllStudents);
         }
 
-        [HttpGet("/getstudentbyid/{id}")]
+        [HttpGet("{id}")]
         public async Task<IActionResult> GetStudentById(int id)
         {
-            var student = await _studentRepository.GetStudentByIdAsync(id);
+            var student = await _studentRepository.GetStudentByIdAsync(id) ?? throw new StudentNotFoundException(ErrorMessages.STUDENT_NOT_FOUND);
             var studentDTO = _mapper.Map<StudentGetDTO>(student);
             return Ok(studentDTO);
         }
 
-        [HttpPut("/updatestudent/")]
-        public async Task<IActionResult> Put([FromBody] StudentUpdateDTO studentUpdateDTO)
+        [HttpPut]
+        public async Task<IActionResult> Put(StudentUpdateDTO student)
         {
-            var student = _mapper.Map<Student>(studentUpdateDTO);
-            var updatedStudent = await _studentRepository.UpdateStudentAsync(student) ?? throw new Exception(ErrorMessages.STUDENT_UPDATE_FAILED);
-            var studentDTO = _mapper.Map<StudentGetDTO>(updatedStudent);
-            return Ok(studentDTO);
+            // var student = _mapper.Map<Student>(studentUpdateDTO);
+            // var updatedStudent = await _studentRepository.UpdateStudentAsync(student) ?? throw new Exception(ErrorMessages.STUDENT_UPDATE_FAILED);
+            // var studentDTO = _mapper.Map<StudentGetDTO>(updatedStudent);
+
+            var oldStudent = await _studentRepository.GetStudentByIdAsync(student.StudentId) ?? throw new StudentNotFoundException(ErrorMessages.STUDENT_NOT_FOUND);
+            bool isUpdated = false;
+            
+            if (!string.IsNullOrEmpty(student.FirstName))
+            {
+                oldStudent.FirstName = student.FirstName;
+                isUpdated = true;
+            }
+
+            if (!string.IsNullOrEmpty(student.LastName))
+            {
+                oldStudent.LastName = student.LastName;
+                isUpdated = true;
+            }
+
+            if (student.BirthDate.HasValue)
+            {
+                oldStudent.BirthDate = (DateTime)student.BirthDate;
+                oldStudent.Age = _studentService.GetAge((DateTime)student.BirthDate);
+                isUpdated = true;
+            }
+
+            if (!string.IsNullOrEmpty(student.Email))
+            {
+                oldStudent.Email = student.Email;
+                isUpdated = true;
+            }
+
+            if (!string.IsNullOrEmpty(student.Phone))
+            {
+                oldStudent.Phone = student.Phone;
+                isUpdated = true;
+            }
+
+            if (isUpdated)
+            {
+                oldStudent.Updated = DateTime.Now;
+                await _studentRepository.SaveChangesAsync();
+                return Ok(_mapper.Map<StudentGetDTO>(oldStudent));
+            }
+            throw new Exception(ErrorMessages.NOTHING_TO_UPDATE);
+
         }
 
-        [HttpDelete("DeleteStudent/{id}")]
+        [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
-            await _studentRepository.DeleteStudentAsync(id);
+            var oldStudent = await _studentRepository.GetStudentByIdAsync(id) ?? throw new StudentNotFoundException(ErrorMessages.STUDENT_NOT_FOUND);
+            oldStudent.IsActive = false;
+            await _studentRepository.SaveChangesAsync();
             return Ok();
         }
     }

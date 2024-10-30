@@ -2,10 +2,10 @@ using FluentValidation;
 using FluentValidation.AspNetCore;
 using Microsoft.EntityFrameworkCore;
 using SchoolApi.Core.Data;
-using SchoolApi.Core.GlobalException;
 using SchoolAPI.Helper;
 using SchoolApi.Core.Repository;
 using SchoolApi.Core.Service;
+using SchoolAPI.GlobalExceptionHandling;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -25,7 +25,10 @@ builder.Services.AddScoped<IStudentRepository, StudentRepository>();
 builder.Services.AddFluentValidationAutoValidation();
 builder.Services.AddValidatorsFromAssemblyContaining<Program>();
 
-builder.Services.AddTransient<GlobalExceptionHandler>();
+builder.Services.AddExceptionHandler<NotFoundExceptionHandler>();
+builder.Services.AddExceptionHandler<BadRequestExceptionHandler>();
+
+// builder.Services.AddSingleton<GlobalExceptionHandler>();
 
 builder.Services.AddCors(options =>
 {
@@ -51,7 +54,8 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
-app.UseMiddleware<GlobalExceptionHandler>();
+
+app.UseExceptionHandler(o => {});
 
 app.UseHttpsRedirection();
 
