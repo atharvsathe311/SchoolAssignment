@@ -2,50 +2,52 @@ using FluentValidation;
 using FluentValidation.TestHelper;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
-using SchoolApi.Core.DTO;
+using SchoolAPI.DTO;
 using SchoolApi.Core.Service;
 using SchoolAPI.Controllers;
 using SchoolAPI.Validators;
+using SchoolApi.Core.Repository;
+using AutoMapper;
+using SchoolApi.Core.Models;
+using Bogus;
 
 namespace SchoolApiUnitTest
 {
     public class StudentControllerTests
     {
-
-        private readonly StudentPostDTOValidator _validator;
         private readonly StudentController _sut;
         private readonly Mock<IStudentService> _studentServiceMock = new Mock<IStudentService>();
-        private readonly Mock<IValidator<StudentPostDTO>> _validatorMock = new Mock<IValidator<StudentPostDTO>>();
+        private readonly Mock<IStudentRepository> _studentRepositoryMock = new Mock<IStudentRepository>();
+        private readonly IMapper _mapper;
+        private readonly Faker<StudentPostDTO> _studentPostDTOFaker;
+        
 
         public StudentControllerTests()
         {
-            _sut = new StudentController(_studentServiceMock.Object, _validatorMock.Object);
-            _validator = new StudentPostDTOValidator();
+            _mapper = new MapperConfiguration(cfg =>
+            {
+                cfg.CreateMap<Student, StudentPostDTO>().ReverseMap();
+                cfg.CreateMap<Student, StudentGetDTO>().ReverseMap();
+                cfg.CreateMap<Student, StudentUpdateDTO>().ReverseMap();
+            }).CreateMapper();
+            
+            _sut = new StudentController(_studentServiceMock.Object,_studentRepositoryMock.Object, _mapper);
+
+            _studentPostDTOFaker = new Faker<StudentPostDTO>()
+            .RuleFor(s => s.FirstName, f => f.Name.FirstName())
+            .RuleFor(s => s.LastName, f => f.Name.LastName())
+            .RuleFor(s => s.Email, f => f.Internet.Email())
+            .RuleFor(s => s.Phone, f => f.Phone.PhoneNumber("9#########"))
+            .RuleFor(s => s.BirthDate, f => f.Date.Past(10, DateTime.Now.AddYears(-10)));
         }
+
 
         [Fact]
         public async Task Post_ShouldReturnStudentDTO_WhenStudentIsCreated()
         {
             // Arrange
-            var studentPostDTO = new StudentPostDTO
-            {
-                FirstName = "Dhruv",
-                LastName = "Trivedi",
-                Email = "dhruvtrivedi@gmail.com",
-                Phone = "1234567890",
-                BirthDate = DateTime.Parse("2000-01-01")
-            };
 
-            var studentGetDTO = new StudentGetDTO
-            {
-                StudentId = 1,
-                FirstName = "Dhruv",
-                LastName = "Trivedi",
-                Email = "dhruvtrivedi@gmail.com",
-                Phone = "1234567890",
-                BirthDate = DateTime.Parse("2000-01-01"),
-                Age = 24,
-            };
+
 
             _validatorMock.Setup(x => x.ValidateAsync(studentPostDTO,default)).ReturnsAsync(new FluentValidation.Results.ValidationResult());
             _studentServiceMock.Setup(x => x.CreateStudentAsync(It.IsAny<StudentPostDTO>())).ReturnsAsync(studentGetDTO);

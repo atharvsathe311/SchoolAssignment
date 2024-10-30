@@ -8,8 +8,8 @@ namespace SchoolApi.Core.Repository
         Task<Student> CreateStudentAsync(Student student);
         Task<(IEnumerable<Student>, int count)> GetAllStudentAsync(int page, int pageSize, string searchTerm);
         Task<Student?> GetStudentByIdAsync(int studentId);
-        Task<Student> UpdateStudentAsync(Student student);
-        Task DeleteStudentAsync(int studentId);
+        Task SaveChangesAsync();
+        Task<bool> DuplicateEntriesChecker(Student student);
 
     }
 }
