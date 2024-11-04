@@ -1,36 +1,37 @@
 using Microsoft.AspNetCore.Diagnostics;
 using SchoolApi.Core.GenearalModels;
 using SchoolAPI.Constants;
-using SchoolAPI.Exceptions;
 
 namespace SchoolAPI.GlobalExceptionHandling
 {
-    internal sealed class NotFoundExceptionHandler:IExceptionHandler
+    internal sealed class GeneraliseExceptionHandler : IExceptionHandler
     {
-        
-        private readonly ILogger<NotFoundExceptionHandler> _logger;
+        private readonly ILogger<GeneraliseExceptionHandler> _logger;
 
-        public NotFoundExceptionHandler(ILogger<NotFoundExceptionHandler> logger)
+        public GeneraliseExceptionHandler(ILogger<GeneraliseExceptionHandler> logger)
         {
             _logger = logger;
         }
 
-        public async ValueTask<bool> TryHandleAsync(HttpContext httpContext,Exception exception,CancellationToken cancellationToken)
+        public async ValueTask<bool> TryHandleAsync(
+            HttpContext httpContext,
+            Exception exception,
+            CancellationToken cancellationToken)
         {
-            if (exception is not StudentNotFoundException notFoundException )
+            if (exception is not Exception generalException)
             {
                 return false;
             }
 
             var traceId = Guid.NewGuid();
+
             _logger.LogError($"TraceId: {traceId}, Exception: {exception.Message}, StackTrace: {exception.StackTrace}");
-    
 
             var problemDetails = new ErrorDetails
             {
-                StatusCode = StatusCodes.Status404NotFound,
-                Message = ErrorMessages.NOT_FOUND,
-                ExceptionMessage = exception.Message
+                StatusCode = StatusCodes.Status500InternalServerError,
+                Message = ErrorMessages.UNKNOWN_ERROR,
+                ExceptionMessage = generalException.Message
             };
 
             httpContext.Response.StatusCode = problemDetails.StatusCode;
@@ -39,6 +40,7 @@ namespace SchoolAPI.GlobalExceptionHandling
                 .WriteAsJsonAsync(problemDetails, cancellationToken);
 
             return true;
-        }   
+
+        }
     }
 }

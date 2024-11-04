@@ -27,8 +27,9 @@ builder.Services.AddValidatorsFromAssemblyContaining<Program>();
 
 builder.Services.AddExceptionHandler<NotFoundExceptionHandler>();
 builder.Services.AddExceptionHandler<BadRequestExceptionHandler>();
+builder.Services.AddExceptionHandler<GeneraliseExceptionHandler>();
 
-// builder.Services.AddSingleton<GlobalExceptionHandler>();
+
 
 builder.Services.AddCors(options =>
 {

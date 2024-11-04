@@ -1,43 +1,45 @@
 using Microsoft.AspNetCore.Diagnostics;
 using SchoolApi.Core.GenearalModels;
+using SchoolAPI.Constants;
 
 namespace SchoolAPI.GlobalExceptionHandling
-{internal sealed class BadRequestExceptionHandler : IExceptionHandler
 {
-    private readonly ILogger<BadRequestExceptionHandler> _logger;
-
-    public BadRequestExceptionHandler(ILogger<BadRequestExceptionHandler> logger)
+    internal sealed class BadRequestExceptionHandler : IExceptionHandler
     {
-        _logger = logger;
-    }
+        private readonly ILogger<BadRequestExceptionHandler> _logger;
 
-    public async ValueTask<bool> TryHandleAsync(
-        HttpContext httpContext,
-        Exception exception,
-        CancellationToken cancellationToken)
-    {
-        if (exception is not BadHttpRequestException badRequestException)
+        public BadRequestExceptionHandler(ILogger<BadRequestExceptionHandler> logger)
         {
-            return false;
+            _logger = logger;
         }
 
-        var traceId = Guid.NewGuid();
-        
-        _logger.LogError($"TraceId: {traceId}, Exception: {exception.Message}, StackTrace: {exception.StackTrace}");
-
-        var problemDetails = new ErrorDetails
+        public async ValueTask<bool> TryHandleAsync(
+            HttpContext httpContext,
+            Exception exception,
+            CancellationToken cancellationToken)
         {
-            StatusCode = StatusCodes.Status400BadRequest,
-            Message = badRequestException.Message,
-            ExceptionMessage = badRequestException.Message
-        };
+            if (exception is not BadHttpRequestException badRequestException)
+            {
+                return false;
+            }
 
-        httpContext.Response.StatusCode = problemDetails.StatusCode;
+            var traceId = Guid.NewGuid();
 
-        await httpContext.Response
-            .WriteAsJsonAsync(problemDetails, cancellationToken);
+            _logger.LogError($"TraceId: {traceId}, Exception: {exception.Message}, StackTrace: {exception.StackTrace}");
 
-        return true;
+            var problemDetails = new ErrorDetails
+            {
+                StatusCode = StatusCodes.Status400BadRequest,
+                Message = ErrorMessages.BAD_REQUEST,
+                ExceptionMessage = badRequestException.Message
+            };
+
+            httpContext.Response.StatusCode = problemDetails.StatusCode;
+
+            await httpContext.Response
+                .WriteAsJsonAsync(problemDetails, cancellationToken);
+
+            return true;
+        }
     }
-}
 }

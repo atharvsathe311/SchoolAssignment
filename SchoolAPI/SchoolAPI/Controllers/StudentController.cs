@@ -27,6 +27,7 @@ namespace SchoolAPI.Controllers
         [HttpPost]
         public async Task<IActionResult> Post(StudentPostDTO studentPostDTO)
         {
+            
             var student = _mapper.Map<Student>(studentPostDTO);
 
             bool duplicateCheck = await _studentRepository.DuplicateEntriesChecker(student);
@@ -67,10 +68,6 @@ namespace SchoolAPI.Controllers
         [HttpPut]
         public async Task<IActionResult> Put(StudentUpdateDTO student)
         {
-            // var student = _mapper.Map<Student>(studentUpdateDTO);
-            // var updatedStudent = await _studentRepository.UpdateStudentAsync(student) ?? throw new Exception(ErrorMessages.STUDENT_UPDATE_FAILED);
-            // var studentDTO = _mapper.Map<StudentGetDTO>(updatedStudent);
-
             var oldStudent = await _studentRepository.GetStudentByIdAsync(student.StudentId) ?? throw new StudentNotFoundException(ErrorMessages.STUDENT_NOT_FOUND);
             bool isUpdated = false;
             
