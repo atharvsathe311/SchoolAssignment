@@ -1,7 +1,6 @@
 ﻿using SchoolApi.Core.Models;
 using SchoolApi.Core.Data;
 using Microsoft.EntityFrameworkCore;
-using SchoolApi.Core.Service;
 
 namespace SchoolApi.Core.Repository
 {

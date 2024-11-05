@@ -1,4 +1,5 @@
 ﻿using FluentValidation;
+using SchoolAPI.Constants;
 using SchoolAPI.DTO;
 
 namespace SchoolAPI.Validators
@@ -8,21 +9,26 @@ namespace SchoolAPI.Validators
         public StudentPostDTOValidator()
         {
             RuleFor(student => student.FirstName)
-                .NotNull().NotEmpty().WithMessage("FirstName is Required")
-                .MinimumLength(2).WithMessage("FirstName must be atleast 2 Characters")
-                .MaximumLength(15).WithMessage("FirstName cannot exceed 15 Characters");
+                .NotNull().NotEmpty().WithMessage(ErrorMessages.FIRST_NAME_REQUIRED)
+                .MinimumLength(2).WithMessage(ErrorMessages.FIRST_NAME_MIN_LENGTH)
+                .MaximumLength(15).WithMessage(ErrorMessages.FIRST_NAME_MAX_LENGTH);
 
-            RuleFor(student => student.LastName).NotNull().NotEmpty().WithMessage("LastName is Required")
-                .MinimumLength(2).WithMessage("LastName must be atleast 2 Characters")
-                .MaximumLength(15).WithMessage("LastName cannot exceed 15 Characters");
+            RuleFor(student => student.LastName)
+                .NotNull().NotEmpty().WithMessage(ErrorMessages.LAST_NAME_REQUIRED)
+                .MinimumLength(2).WithMessage(ErrorMessages.LAST_NAME_MIN_LENGTH)
+                .MaximumLength(15).WithMessage(ErrorMessages.LAST_NAME_MAX_LENGTH);
 
-            RuleFor(student => student.Email).NotNull().NotEmpty().WithMessage("Email is Required")
-                .EmailAddress().WithMessage("Invalid Email");
+            RuleFor(student => student.Email)
+                .NotNull().NotEmpty().WithMessage(ErrorMessages.EMAIL_REQUIRED)
+                .EmailAddress().WithMessage(ErrorMessages.INVALID_EMAIL);
 
-            RuleFor(student => student.Phone).NotNull().NotEmpty().WithMessage("Phone Number is Required")
-                .Matches("^[6-9]\\d{9}$").WithMessage("Invalid Phone Number");
+            RuleFor(student => student.Phone)
+                .NotNull().NotEmpty().WithMessage(ErrorMessages.PHONE_REQUIRED)
+                .Matches("^[6-9]\\d{9}$").WithMessage(ErrorMessages.INVALID_PHONE_NUMBER);
 
-            RuleFor(student => student.BirthDate).NotNull().NotEmpty().WithMessage("BirthDate is Required").Must(BeAValidBirthDate).WithMessage("Invalid Birthdate");
+            RuleFor(student => student.BirthDate)
+                .NotNull().NotEmpty().WithMessage(ErrorMessages.BIRTH_DATE_REQUIRED)
+                .Must(BeAValidBirthDate).WithMessage(ErrorMessages.INVALID_BIRTH_DATE);
 
         }
 

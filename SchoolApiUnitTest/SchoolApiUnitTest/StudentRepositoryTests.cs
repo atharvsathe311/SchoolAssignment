@@ -1,56 +1,43 @@
 using Microsoft.EntityFrameworkCore;
-using Moq;
 using SchoolApi.Core.Data;
 using SchoolApi.Core.Models;
 using SchoolApi.Core.Repository;
+using Bogus;
 
 namespace SchoolApiUnitTest
 {
     public class StudentRepositoryTests
     {
+        private readonly Faker<Student> _studentFaker;
+
+        public StudentRepositoryTests()
+        {
+            _studentFaker = new Faker<Student>()
+                .RuleFor(s => s.FirstName, f => f.Name.FirstName())
+                .RuleFor(s => s.LastName, f => f.Name.LastName())
+                .RuleFor(s => s.Email, f => f.Internet.Email())
+                .RuleFor(s => s.Phone, f => f.Phone.PhoneNumber("9#########"))
+                .RuleFor(s => s.BirthDate, f => f.Date.Past(20))
+                .RuleFor(s => s.Age, (f, s) => DateTime.Now.Year - s.BirthDate.Value.Year)
+                .RuleFor(s => s.Created, f => f.Date.Past())
+                .RuleFor(s => s.Updated, f => f.Date.Recent())
+                .RuleFor(s => s.IsActive, f => f.Random.Bool(0.75f));
+        }
+
         private SchoolDbContext GetInMemoryDbContext()
         {
             var options = new DbContextOptionsBuilder<SchoolDbContext>()
-                .UseInMemoryDatabase(Guid.NewGuid().ToString()) // Unique database for each test
+                .UseInMemoryDatabase(Guid.NewGuid().ToString())
                 .Options;
 
             var context = new SchoolDbContext(options);
-            SeedData(context); // Seed test data
+            SeedData(context);
             return context;
         }
 
         private void SeedData(SchoolDbContext context)
         {
-            context.Students.AddRange(
-                new Student 
-                { 
-                    StudentId = 1, FirstName = "Atharv", LastName = "Sathe", Email = "atharv@example.com", 
-                    Phone = "1234567890", BirthDate = new DateTime(2005, 1, 15), Age = 18, 
-                    Created = DateTime.UtcNow.AddMonths(-6), Updated = DateTime.UtcNow.AddDays(-2), 
-                    IsActive = true 
-                },
-                new Student 
-                { 
-                    StudentId = 2, FirstName = "Dhruv", LastName = "Trivedi", Email = "dhruv@example.com", 
-                    Phone = "0987654321", BirthDate = new DateTime(2003, 5, 22), Age = 20, 
-                    Created = DateTime.UtcNow.AddMonths(-12), Updated = DateTime.UtcNow.AddDays(-5), 
-                    IsActive = true 
-                },
-                new Student 
-                { 
-                    StudentId = 3, FirstName = "Avadhoot", LastName = "Virkar", Email = "avadhoot@example.com", 
-                    Phone = "1122334455", BirthDate = new DateTime(2004, 3, 17), Age = 19, 
-                    Created = DateTime.UtcNow.AddMonths(-8), Updated = DateTime.UtcNow.AddDays(-1), 
-                    IsActive = false 
-                },
-                new Student 
-                { 
-                    StudentId = 4, FirstName = "Neel", LastName = "Dalvi", Email = "neel@example.com", 
-                    Phone = "2233445566", BirthDate = new DateTime(2002, 11, 30), Age = 21, 
-                    Created = DateTime.UtcNow.AddMonths(-10), Updated = DateTime.UtcNow.AddDays(-3), 
-                    IsActive = true 
-                }
-            );
+            context.Students.AddRange(_studentFaker.Generate(10));
             context.SaveChanges();
         }
 
@@ -61,18 +48,10 @@ namespace SchoolApiUnitTest
             using var context = GetInMemoryDbContext();
             var repository = new StudentRepository(context);
 
-            var newStudent = new Student
-            {
-                FirstName = "New",
-                LastName = "Student",
-                Email = "newstudent@example.com",
-                Phone = "1231231234",
-                BirthDate = new DateTime(2000, 12, 12),
-                Age = 22,
-                Created = DateTime.UtcNow,
-                Updated = DateTime.UtcNow,
-                IsActive = true
-            };
+            var newStudent = _studentFaker.Generate();
+            newStudent.Created = DateTime.UtcNow;
+            newStudent.Updated = DateTime.UtcNow;
+            newStudent.IsActive = true;
 
             // Act
             var result = await repository.CreateStudentAsync(newStudent);
@@ -80,7 +59,15 @@ namespace SchoolApiUnitTest
 
             // Assert
             Assert.Contains(result, students);
-            Assert.Equal("New", result.FirstName);
+            Assert.Equal(newStudent.FirstName, result.FirstName);
+            Assert.Equal(newStudent.LastName, result.LastName);
+            Assert.Equal(newStudent.Email, result.Email);
+            Assert.Equal(newStudent.Phone, result.Phone);
+            Assert.Equal(newStudent.BirthDate, result.BirthDate);
+            Assert.Equal(newStudent.Age, result.Age);
+            Assert.Equal(newStudent.Created, result.Created);
+            Assert.Equal(newStudent.Updated, result.Updated);
+            Assert.Equal(newStudent.IsActive, result.IsActive);
         }
 
         [Fact]
@@ -91,12 +78,40 @@ namespace SchoolApiUnitTest
             var repository = new StudentRepository(context);
 
             // Act
-            var (students, count) = await repository.GetAllStudentAsync(1, 2, "");
+            var (students, count) = await repository.GetAllStudentAsync(1, 5, "");
 
             // Assert
-            Assert.Equal(3, count); // 3 active students
-            Assert.Equal(2, students.Count()); // pageSize of 2
-            Assert.All(students, s => Assert.True(s.IsActive)); // Ensure all are active
+            Assert.Equal(context.Students.Count(s => s.IsActive), count);
+            Assert.True(students.Count() <= 5);
+            Assert.All(students, s => Assert.True(s.IsActive));
+            Assert.All(students, s =>
+            {
+                Assert.NotNull(s.FirstName);
+                Assert.NotNull(s.LastName);
+                Assert.NotNull(s.Email);
+                Assert.NotNull(s.Phone);
+                Assert.NotNull(s.BirthDate);
+                Assert.True(s.Age >= 0);
+                Assert.True(s.IsActive);
+            });
+        }
+
+        [Fact]
+        public async Task GetAllStudentAsync_ShouldReturnEmpty_WhenNoActiveStudents()
+        {
+            // Arrange
+            using var context = GetInMemoryDbContext();
+            var repository = new StudentRepository(context);
+
+            context.Students.RemoveRange(context.Students);
+            await context.SaveChangesAsync();
+
+            // Act
+            var (students, count) = await repository.GetAllStudentAsync(1, 5, "");
+
+            // Assert
+            Assert.Empty(students);
+            Assert.Equal(0, count);
         }
 
         [Fact]
@@ -106,12 +121,24 @@ namespace SchoolApiUnitTest
             using var context = GetInMemoryDbContext();
             var repository = new StudentRepository(context);
 
+            var testStudent = context.Students.FirstOrDefault(s => s.IsActive);
+            var searchTerm = testStudent?.FirstName ?? "";
+
             // Act
-            var (students, count) = await repository.GetAllStudentAsync(1, 10, "Dhruv");
+            var (students, count) = await repository.GetAllStudentAsync(1, 10, searchTerm);
 
             // Assert
-            Assert.Single(students);
-            Assert.Equal("Dhruv", students.First().FirstName);
+            Assert.Contains(students, s => s.FirstName.Contains(searchTerm));
+            Assert.All(students, s =>
+            {
+                Assert.NotNull(s.FirstName);
+                Assert.NotNull(s.LastName);
+                Assert.NotNull(s.Email);
+                Assert.NotNull(s.Phone);
+                Assert.NotNull(s.BirthDate);
+                Assert.True(s.Age >= 0);
+                Assert.True(s.IsActive);
+            });
         }
 
         [Fact]
@@ -121,12 +148,22 @@ namespace SchoolApiUnitTest
             using var context = GetInMemoryDbContext();
             var repository = new StudentRepository(context);
 
+            var existingStudent = context.Students.FirstOrDefault();
+
             // Act
-            var student = await repository.GetStudentByIdAsync(1);
+            var student = await repository.GetStudentByIdAsync(existingStudent.StudentId);
 
             // Assert
             Assert.NotNull(student);
-            Assert.Equal("Atharv", student.FirstName);
+            Assert.Equal(existingStudent.FirstName, student.FirstName);
+            Assert.Equal(existingStudent.LastName, student.LastName);
+            Assert.Equal(existingStudent.Email, student.Email);
+            Assert.Equal(existingStudent.Phone, student.Phone);
+            Assert.Equal(existingStudent.BirthDate, student.BirthDate);
+            Assert.Equal(existingStudent.Age, student.Age);
+            Assert.Equal(existingStudent.Created, student.Created);
+            Assert.Equal(existingStudent.Updated, student.Updated);
+            Assert.Equal(existingStudent.IsActive, student.IsActive);
         }
 
         [Fact]
@@ -142,5 +179,67 @@ namespace SchoolApiUnitTest
             // Assert
             Assert.Null(student);
         }
+
+        [Fact]
+        public async Task DuplicateChecker_ShouldReturnTrue_WhenDuplicateEmailExists()
+        {
+            // Arrange
+            using var context = GetInMemoryDbContext();
+            var repository = new StudentRepository(context);
+            var existingStudent = await context.Students.FirstOrDefaultAsync();
+
+            // Act
+            var result = await repository.DuplicateEntriesChecker(existingStudent);
+
+            // Assert
+            Assert.True(result);
+        }
+
+        [Fact]
+        public async Task DuplicateChecker_ShouldReturnFalse_WhenNoDuplicateEmailExists()
+        {
+            // Arrange
+            using var context = GetInMemoryDbContext();
+            var repository = new StudentRepository(context);
+            var nonExistingEmailStudent = _studentFaker.Generate();
+
+            // Act
+            var result = await repository.DuplicateEntriesChecker(nonExistingEmailStudent);
+
+            // Assert
+            Assert.False(result);
+        }
+
+        [Fact]
+        public async Task DuplicateChecker_ShouldReturnTrue_WhenDuplicatePhoneExists()
+        {
+            // Arrange
+            using var context = GetInMemoryDbContext();
+            var repository = new StudentRepository(context);
+            var existingStudent = await context.Students.FirstOrDefaultAsync();
+
+            // Act
+            var result = await repository.DuplicateEntriesChecker(existingStudent);
+
+            // Assert
+            Assert.True(result);
+        }
+
+        [Fact]
+        public async Task DuplicateChecker_ShouldReturnFalse_WhenNoDuplicatePhoneExists()
+        {
+            // Arrange
+            using var context = GetInMemoryDbContext();
+            var repository = new StudentRepository(context);
+            var nonExistingPhoneStudent = _studentFaker.Generate();
+
+            // Act
+            var result = await repository.DuplicateEntriesChecker(nonExistingPhoneStudent);
+
+            // Assert
+            Assert.False(result);
+        }
     }
 }
+
+

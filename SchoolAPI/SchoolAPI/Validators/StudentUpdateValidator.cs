@@ -1,4 +1,5 @@
 using FluentValidation;
+using SchoolAPI.Constants;
 using SchoolAPI.DTO;
 
 namespace SchoolAPI.Validators
@@ -8,25 +9,26 @@ namespace SchoolAPI.Validators
         public StudentUpdateValidator()
         {
             RuleFor(student => student.FirstName)
-                .MinimumLength(2).WithMessage("FirstName must be atleast 2 Characters")
-                .MaximumLength(15).WithMessage("FirstName cannot exceed 15 Characters")
+                .MinimumLength(2).WithMessage(ErrorMessages.FIRST_NAME_MIN_LENGTH)
+                .MaximumLength(15).WithMessage(ErrorMessages.FIRST_NAME_MAX_LENGTH)
                 .When(s => !string.IsNullOrEmpty(s.FirstName));                
 
-            RuleFor(student => student.LastName).NotNull().NotEmpty()
-                .MinimumLength(2).WithMessage("LastName must be atleast 2 Characters")
-                .MaximumLength(15).WithMessage("LastName cannot exceed 15 Characters")
+            RuleFor(student => student.LastName)
+                .NotNull().NotEmpty().WithMessage(ErrorMessages.LAST_NAME_REQUIRED)
+                .MinimumLength(2).WithMessage(ErrorMessages.LAST_NAME_MIN_LENGTH)
+                .MaximumLength(15).WithMessage(ErrorMessages.LAST_NAME_MAX_LENGTH)
                 .When(s => !string.IsNullOrEmpty(s.LastName));
 
             RuleFor(student => student.Email)
-                .EmailAddress().WithMessage("Invalid Email")
+                .EmailAddress().WithMessage(ErrorMessages.INVALID_EMAIL)
                 .When(s => !string.IsNullOrEmpty(s.Email));
 
             RuleFor(student => student.Phone)
-                .Matches("^[6-9]\\d{9}$").WithMessage("Invalid Phone Number")
-                .When(s =>!string.IsNullOrEmpty(s.Phone));
+                .Matches("^[6-9]\\d{9}$").WithMessage(ErrorMessages.INVALID_PHONE_NUMBER)
+                .When(s => !string.IsNullOrEmpty(s.Phone));
 
             RuleFor(student => student.BirthDate)                
-            .Must(BeAValidBirthDate).WithMessage("Invalid Birthdate");
+                .Must(BeAValidBirthDate).WithMessage(ErrorMessages.INVALID_BIRTH_DATE);
 
         }
 
