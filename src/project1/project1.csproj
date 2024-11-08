@@ -21,7 +21,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\SchoolApi.Core\project2.csproj" />
+    <ProjectReference Include="..\project2\project2.csproj" />
   </ItemGroup>
 
 
