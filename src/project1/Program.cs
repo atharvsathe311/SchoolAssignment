@@ -5,10 +5,8 @@ using SchoolApi.Core.Data;
 using SchoolAPI.Helper;
 using SchoolApi.Core.Repository;
 using SchoolApi.Core.Service;
-using SchoolAPI.GlobalExceptionHandling;
-using SchoolAPI.Constants;
-using Microsoft.AspNetCore.Mvc;
 using SchoolAPI.Filters;
+using SchoolAPI.GlobalExceptionHandling;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -30,14 +28,11 @@ builder.Services.AddControllers(options =>
 builder.Services.AddAutoMapper(typeof(AutoMapperProfiles).Assembly);
 builder.Services.AddScoped<IStudentService, StudentService>();
 builder.Services.AddScoped<IStudentRepository, StudentRepository>();
-builder.Services.AddFluentValidationAutoValidation().AddFluentValidationClientsideAdapters();
+builder.Services.AddFluentValidationAutoValidation();
 builder.Services.AddValidatorsFromAssemblyContaining<Program>();
 
-// builder.Services.AddExceptionHandler<NotFoundExceptionHandler>();
-// builder.Services.AddExceptionHandler<BadRequestExceptionHandler>();
 builder.Services.AddExceptionHandler<GeneraliseExceptionHandler>();
-
-
+builder.Services.AddExceptionHandler<AnyExceptionHandler>();
 
 builder.Services.AddCors(options =>
 {
