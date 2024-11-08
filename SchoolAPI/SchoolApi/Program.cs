@@ -32,7 +32,6 @@ builder.Services.AddFluentValidationAutoValidation();
 builder.Services.AddValidatorsFromAssemblyContaining<Program>();
 
 builder.Services.AddExceptionHandler<GeneraliseExceptionHandler>();
-builder.Services.AddExceptionHandler<AnyExceptionHandler>();
 
 builder.Services.AddCors(options =>
 {

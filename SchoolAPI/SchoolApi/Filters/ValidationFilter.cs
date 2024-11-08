@@ -1,6 +1,7 @@
 using System.Text.Json;
 using Microsoft.AspNetCore.Mvc.Filters;
 using SchoolApi.Core.GenearalModels;
+using SchoolApi.Exceptions;
 using SchoolAPI.Constants;
 using SchoolAPI.Exceptions;
 
@@ -16,19 +17,21 @@ namespace SchoolAPI.Filters
         {
             if (!context.ModelState.IsValid)
             {
-                var ExceptionErrors = string.Join(",", 
-                        context.ModelState
-                            .Where(e => e.Value.Errors.Count > 0)
-                            .SelectMany(kvp => kvp.Value.Errors.Select(err => err.ErrorMessage))
-                    );
+                var ExceptionErrors = context.ModelState
+                        .Where(e => e.Value.Errors.Count > 0)
+                        .ToDictionary(
+                            kvp => kvp.Key,
+                            kvp => kvp.Value.Errors.Select(err => err.ErrorMessage).ToList()
+                        );
                          
-                var errorDetails = new ErrorDetails
+                var errorDetails = new ValidationErrors
                 {
-                    Message = ExceptionErrors,
-                    StatusCode = StatusCodes.Status400BadRequest
+                    Message = ErrorMessages.ValidationError,
+                    StatusCode = StatusCodes.Status400BadRequest,
+                    Errors = ExceptionErrors
                 };
                 
-                throw new CustomException(errorDetails);
+                throw new ValidationException(errorDetails);
             }
         }
     }

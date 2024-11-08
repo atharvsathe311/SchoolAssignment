@@ -40,7 +40,7 @@ namespace SchoolAPI.Controllers
             student.Updated = DateTime.Now;
             student.IsActive = true;
 
-            var createdStudent = await _studentRepository.CreateStudentAsync(student) ?? throw new Exception(ErrorMessages.STUDENT_CREATE_FAILED);
+            var createdStudent = await _studentRepository.CreateStudentAsync(student);
             var newStudentDTO = _mapper.Map<StudentGetDTO>(createdStudent);
             return Ok(newStudentDTO);
         }
