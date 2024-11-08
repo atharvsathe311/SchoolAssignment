@@ -6,6 +6,8 @@ using SchoolAPI.Helper;
 using SchoolApi.Core.Repository;
 using SchoolApi.Core.Service;
 using SchoolAPI.GlobalExceptionHandling;
+using SchoolAPI.Constants;
+using Microsoft.AspNetCore.Mvc;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -16,7 +18,29 @@ builder.Services.AddDbContext<SchoolDbContext>(
     .EnableDetailedErrors()
     .EnableSensitiveDataLogging());
 
-builder.Services.AddControllers();
+builder.Services.AddControllers(options =>
+{
+    // Customize model state invalid response
+    options.ModelBindingMessageProvider.SetValueMustNotBeNullAccessor(_ => "This field is required.");
+}).ConfigureApiBehaviorOptions(options =>
+{
+    options.InvalidModelStateResponseFactory = context =>
+    {
+        var errorDetails = new 
+        {
+            Message = ErrorMessages.ValidationError,
+            StatusCode = StatusCodes.Status400BadRequest,
+            ExceptionErrors = context.ModelState
+            .Where(e => e.Value.Errors.Count > 0)
+            .ToDictionary(
+                kvp => kvp.Key,
+                kvp => kvp.Value.Errors.Select(err => err.ErrorMessage).ToArray()
+            )
+        };
+ 
+        return new BadRequestObjectResult(errorDetails);
+    };
+});
 
 builder.Services.AddAutoMapper(typeof(AutoMapperProfiles).Assembly);
 
@@ -27,6 +51,7 @@ builder.Services.AddValidatorsFromAssemblyContaining<Program>();
 
 builder.Services.AddExceptionHandler<NotFoundExceptionHandler>();
 builder.Services.AddExceptionHandler<BadRequestExceptionHandler>();
+// builder.Services.AddExceptionHandler<ValidationExceptionHandler>();
 builder.Services.AddExceptionHandler<GeneraliseExceptionHandler>();
 
 

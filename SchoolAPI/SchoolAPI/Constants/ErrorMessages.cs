@@ -2,6 +2,7 @@ namespace SchoolAPI.Constants
 {
     public class ErrorMessages
     {
+        public const string ValidationError = "Invalid Inputs";
         public const string STUDENT_NOT_FOUND = "Student Not Found.";
         public const string STUDENT_CREATE_FAILED = "Failed to create student.";
         public const string STUDENT_UPDATE_FAILED = "Failed to update student.";

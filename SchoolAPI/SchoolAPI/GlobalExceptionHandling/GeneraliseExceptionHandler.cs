@@ -18,10 +18,7 @@ namespace SchoolAPI.GlobalExceptionHandling
             Exception exception,
             CancellationToken cancellationToken)
         {
-            if (exception is not Exception generalException)
-            {
-                return false;
-            }
+
 
             var traceId = Guid.NewGuid();
 
@@ -31,7 +28,7 @@ namespace SchoolAPI.GlobalExceptionHandling
             {
                 StatusCode = StatusCodes.Status500InternalServerError,
                 Message = ErrorMessages.UNKNOWN_ERROR,
-                ExceptionMessage = generalException.Message
+                ExceptionMessage = exception.Message
             };
 
             httpContext.Response.StatusCode = problemDetails.StatusCode;

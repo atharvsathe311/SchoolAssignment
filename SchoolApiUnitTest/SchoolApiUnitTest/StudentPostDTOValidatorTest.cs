@@ -8,7 +8,7 @@ namespace SchoolApiUnitTest
 {
     public class StudentPostDTOValidatorTest
     {
-          private readonly StudentPostDTOValidator _validator;
+        private readonly StudentPostDTOValidator _validator;
         private readonly Faker<StudentPostDTO> _studentPostDTOFaker;
 
         public StudentPostDTOValidatorTest()
