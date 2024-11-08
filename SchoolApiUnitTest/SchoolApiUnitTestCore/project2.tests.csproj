@@ -23,8 +23,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\SchoolAPI\SchoolApi.Core\SchoolApi.Core.csproj" />
-    <ProjectReference Include="..\..\SchoolAPI\SchoolAPI\SchoolAPI.csproj" />
+    <ProjectReference Include="..\..\SchoolAPI\SchoolApi.Core\project2.csproj" />
+    <ProjectReference Include="..\..\SchoolAPI\SchoolAPI\project1.csproj" />
   </ItemGroup>
 
 </Project>

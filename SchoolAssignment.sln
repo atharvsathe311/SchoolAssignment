@@ -3,25 +3,22 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SchoolApiUnitTest", "SchoolApiUnitTest", "{36F8FDBC-58E6-466D-9F6C-C1A8D1DBC216}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{36F8FDBC-58E6-466D-9F6C-C1A8D1DBC216}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SchoolApiUnitTest", "SchoolApiUnitTest\SchoolApiUnitTest\SchoolApiUnitTest.csproj", "{4D0B885C-5B80-431C-AE99-D5E25A1AD8EE}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "project1.tests", "SchoolApiUnitTest\SchoolApiUnitTest\project1.tests.csproj", "{4D0B885C-5B80-431C-AE99-D5E25A1AD8EE}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SchoolAPI", "SchoolAPI", "{314F0C99-383C-4E58-9528-016154E0201B}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{314F0C99-383C-4E58-9528-016154E0201B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SchoolApi.Core", "SchoolAPI\SchoolApi.Core\SchoolApi.Core.csproj", "{DE045694-C99E-40E0-A8BD-5387327513B2}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "project2", "SchoolAPI\SchoolApi.Core\project2.csproj", "{DE045694-C99E-40E0-A8BD-5387327513B2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SchoolAPI", "SchoolAPI\SchoolAPI\SchoolAPI.csproj", "{32BFD8C4-2764-42C3-8D29-052BBD166503}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "project1", "SchoolAPI\SchoolAPI\project1.csproj", "{32BFD8C4-2764-42C3-8D29-052BBD166503}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SchoolApiUnitTestCore", "SchoolApiUnitTest\SchoolApiUnitTestCore\SchoolApiUnitTestCore.csproj", "{01B69BF1-D494-4F06-81D9-8E842A977C13}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "project2.tests", "SchoolApiUnitTest\SchoolApiUnitTestCore\project2.tests.csproj", "{01B69BF1-D494-4F06-81D9-8E842A977C13}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
-	EndGlobalSection
-	GlobalSection(SolutionProperties) = preSolution
-		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{4D0B885C-5B80-431C-AE99-D5E25A1AD8EE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -40,6 +37,9 @@ Global
 		{01B69BF1-D494-4F06-81D9-8E842A977C13}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{01B69BF1-D494-4F06-81D9-8E842A977C13}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{01B69BF1-D494-4F06-81D9-8E842A977C13}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{4D0B885C-5B80-431C-AE99-D5E25A1AD8EE} = {36F8FDBC-58E6-466D-9F6C-C1A8D1DBC216}
