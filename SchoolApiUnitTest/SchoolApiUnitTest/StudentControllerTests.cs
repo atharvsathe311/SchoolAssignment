@@ -91,21 +91,37 @@ public class StudentControllerTests
         Assert.Equal(ErrorMessages.STUDENT_EXISTS, exception.Message);
     }
 
-    [Fact]
-    public async Task GetAllStudentAsync_ShouldReturnOkResultWithPaginatedList()
+    [Fact]public async Task GetAllStudentAsync_ShouldReturnOkResultWithPaginatedList()
+{
+    // Arrange
+    var students = _studentFaker.Generate(5);
+    _studentRepositoryMock.Setup(r => r.GetAllStudentAsync(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<string>()))
+                          .ReturnsAsync((students, 5));
+
+    // Act
+    var result = await _controller.GetAllStudentAsync();
+
+    // Assert
+    var okResult = Assert.IsType<OkObjectResult>(result);
+    var allStudents = Assert.IsType<GetAllStudentsDTO>(okResult.Value);
+    
+    // Check the count of students in the list
+    Assert.Equal(5, allStudents.StudentList.Count());
+
+    var studentList = allStudents.StudentList.ToList();
+    for (int i = 0; i < students.Count; i++)
     {
-        // Arrange
-        var students = _studentFaker.Generate(5);
-        _studentRepositoryMock.Setup(r => r.GetAllStudentAsync(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<string>())).ReturnsAsync((students, 5));
-
-        // Act
-        var result = await _controller.GetAllStudentAsync();
-
-        // Assert
-        var okResult = Assert.IsType<OkObjectResult>(result);
-        var allStudents = Assert.IsType<GetAllStudentsDTO>(okResult.Value);
-        Assert.Equal(5, allStudents.StudentList.Count());
+        Assert.Equal(students[i].StudentId, studentList[i].StudentId);
+        Assert.Equal(students[i].FirstName, studentList[i].FirstName);
+        Assert.Equal(students[i].LastName, studentList[i].LastName);
+        Assert.Equal(students[i].Email, studentList[i].Email);
+        Assert.Equal(students[i].Phone, studentList[i].Phone);
+        Assert.Equal(students[i].BirthDate, studentList[i].BirthDate);
+        Assert.Equal(students[i].Age, studentList[i].Age);
     }
+
+    Assert.Equal(5, allStudents.TotalCount);
+}
 
     [Fact]
     public async Task GetStudentById_ShouldReturnOkResult_WhenStudentExists()
@@ -125,6 +141,8 @@ public class StudentControllerTests
         Assert.Equal(student.LastName, returnedStudent.LastName);
         Assert.Equal(student.Email, returnedStudent.Email);
         Assert.Equal(student.Phone, returnedStudent.Phone);
+        Assert.Equal(student.BirthDate, returnedStudent.BirthDate);
+        Assert.Equal(student.Age, returnedStudent.Age);
     }
 
     [Fact]
@@ -155,6 +173,7 @@ public class StudentControllerTests
         // Assert
         var okResult = Assert.IsType<OkObjectResult>(result);
         var updatedStudent = Assert.IsType<StudentGetDTO>(okResult.Value);
+        Assert.Equal(oldStudent.StudentId, updatedStudent.StudentId);
         Assert.Equal(studentUpdateDTO.FirstName, updatedStudent.FirstName);
         Assert.Equal(studentUpdateDTO.Email, updatedStudent.Email);
         Assert.Equal(oldStudent.LastName, updatedStudent.LastName);
