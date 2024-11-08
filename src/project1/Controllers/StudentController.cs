@@ -33,7 +33,7 @@ namespace SchoolAPI.Controllers
             bool duplicateCheck = await _studentRepository.DuplicateEntriesChecker(student);
 
             if (duplicateCheck)
-                throw new Exception(ErrorMessages.STUDENT_EXISTS);
+                throw new CustomException(ErrorMessages.StudentExistsExceptionDetails);
 
             student.Age = _studentService.GetAge(studentPostDTO.BirthDate);
             student.Created = DateTime.Now;
@@ -60,7 +60,11 @@ namespace SchoolAPI.Controllers
         [HttpGet("{id}")]
         public async Task<IActionResult> GetStudentById(int id)
         {
-            var student = await _studentRepository.GetStudentByIdAsync(id) ?? throw new StudentNotFoundException(ErrorMessages.STUDENT_NOT_FOUND);
+            var student = await _studentRepository.GetStudentByIdAsync(id);
+            if (student == null)
+            {
+                return NotFound(ErrorMessages.StudentNotFoundExceptionDetails);
+            }
             var studentDTO = _mapper.Map<StudentGetDTO>(student);
             return Ok(studentDTO);
         }
@@ -68,7 +72,12 @@ namespace SchoolAPI.Controllers
         [HttpPut]
         public async Task<IActionResult> Put(StudentUpdateDTO student)
         {
-            var oldStudent = await _studentRepository.GetStudentByIdAsync(student.StudentId) ?? throw new StudentNotFoundException(ErrorMessages.STUDENT_NOT_FOUND);
+            var oldStudent = await _studentRepository.GetStudentByIdAsync(student.StudentId);
+            if(oldStudent == null)
+            {
+                return NotFound(ErrorMessages.StudentNotFoundExceptionDetails);
+            }
+            
             bool isUpdated = false;
             
             if (!string.IsNullOrEmpty(student.FirstName))
@@ -108,14 +117,18 @@ namespace SchoolAPI.Controllers
                 await _studentRepository.SaveChangesAsync();
                 return Ok(_mapper.Map<StudentGetDTO>(oldStudent));
             }
-            throw new Exception(ErrorMessages.NOTHING_TO_UPDATE);
+            return BadRequest(ErrorMessages.NothingToUpdate);
 
         }
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
-            var oldStudent = await _studentRepository.GetStudentByIdAsync(id) ?? throw new StudentNotFoundException(ErrorMessages.STUDENT_NOT_FOUND);
+            var oldStudent = await _studentRepository.GetStudentByIdAsync(id);
+            if (oldStudent == null)
+            {
+                return NotFound(ErrorMessages.StudentNotFoundExceptionDetails);
+            }
             oldStudent.IsActive = false;
             await _studentRepository.SaveChangesAsync();
             return Ok();

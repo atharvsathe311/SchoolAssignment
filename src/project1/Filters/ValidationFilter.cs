@@ -1,6 +1,8 @@
-using Microsoft.AspNetCore.Mvc;
+using System.Text.Json;
 using Microsoft.AspNetCore.Mvc.Filters;
+using SchoolApi.Core.GenearalModels;
 using SchoolAPI.Constants;
+using SchoolAPI.Exceptions;
 
 namespace SchoolAPI.Filters
 {
@@ -12,29 +14,21 @@ namespace SchoolAPI.Filters
 
         public void OnActionExecuting(ActionExecutingContext context)
         {
-            Console.WriteLine("");
-            Console.WriteLine("");
-            Console.WriteLine("");
-            Console.WriteLine("");
-            Console.WriteLine("");
-            Console.WriteLine("");
-            Console.WriteLine("");
-            Console.WriteLine("");
-            Console.WriteLine("");
             if (!context.ModelState.IsValid)
             {
-                 var errorDetails = new 
-                    {
-                        Message = ErrorMessages.ValidationError,
-                        StatusCode = StatusCodes.Status400BadRequest,
-                        ExceptionErrors = context.ModelState
-                        .Where(e => e.Value.Errors.Count > 0)
-                        .ToDictionary(
-                            kvp => kvp.Key,
-                            kvp => kvp.Value.Errors.Select(err => err.ErrorMessage).ToArray()
-                        )
-                    };
-                context.Result = new BadRequestObjectResult(errorDetails);
+                var ExceptionErrors = string.Join(",", 
+                        context.ModelState
+                            .Where(e => e.Value.Errors.Count > 0)
+                            .SelectMany(kvp => kvp.Value.Errors.Select(err => err.ErrorMessage))
+                    );
+                         
+                var errorDetails = new ErrorDetails
+                {
+                    Message = ExceptionErrors,
+                    StatusCode = StatusCodes.Status400BadRequest
+                };
+                
+                throw new CustomException(errorDetails);
             }
         }
     }

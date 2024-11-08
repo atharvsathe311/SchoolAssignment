@@ -22,37 +22,10 @@ builder.Services.AddDbContext<SchoolDbContext>(
 builder.Services.AddControllers(options =>
 {
     options.Filters.Add<ValidationFilter>();
-    options.ModelBindingMessageProvider.SetValueMustNotBeNullAccessor(_ => "This field is required.");
 }).ConfigureApiBehaviorOptions(options =>
 {
     options.SuppressModelStateInvalidFilter = true;
 });
-
-// builder.Services.AddControllers(options =>
-// {
-//     // Customize model state invalid response
-//     options.ModelBindingMessageProvider.SetValueMustNotBeNullAccessor(_ => "This field is required.");
-// }).ConfigureApiBehaviorOptions(options =>
-// {
-//     options.InvalidModelStateResponseFactory = context =>
-//     {
-//         var errorDetails = new 
-//         {
-//             Message = ErrorMessages.ValidationError,
-//             StatusCode = StatusCodes.Status400BadRequest,
-//             ExceptionErrors = context.ModelState
-//             .Where(e => e.Value.Errors.Count > 0)
-//             .ToDictionary(
-//                 kvp => kvp.Key,
-//                 kvp => kvp.Value.Errors.Select(err => err.ErrorMessage).ToArray()
-//             )
-//         };
-
-//         return new BadRequestObjectResult(errorDetails);
-//     };
-// });
-
-
 
 builder.Services.AddAutoMapper(typeof(AutoMapperProfiles).Assembly);
 builder.Services.AddScoped<IStudentService, StudentService>();
@@ -60,9 +33,8 @@ builder.Services.AddScoped<IStudentRepository, StudentRepository>();
 builder.Services.AddFluentValidationAutoValidation().AddFluentValidationClientsideAdapters();
 builder.Services.AddValidatorsFromAssemblyContaining<Program>();
 
-
-builder.Services.AddExceptionHandler<NotFoundExceptionHandler>();
-builder.Services.AddExceptionHandler<BadRequestExceptionHandler>();
+// builder.Services.AddExceptionHandler<NotFoundExceptionHandler>();
+// builder.Services.AddExceptionHandler<BadRequestExceptionHandler>();
 builder.Services.AddExceptionHandler<GeneraliseExceptionHandler>();
 
 

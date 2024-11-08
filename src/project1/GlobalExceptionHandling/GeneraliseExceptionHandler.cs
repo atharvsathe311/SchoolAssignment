@@ -1,6 +1,7 @@
+using System.Net;
 using Microsoft.AspNetCore.Diagnostics;
-using SchoolApi.Core.GenearalModels;
-using SchoolAPI.Constants;
+using Org.BouncyCastle.Asn1.Cmp;
+using SchoolAPI.Exceptions;
 
 namespace SchoolAPI.GlobalExceptionHandling
 {
@@ -19,25 +20,23 @@ namespace SchoolAPI.GlobalExceptionHandling
             CancellationToken cancellationToken)
         {
 
-
-            var traceId = Guid.NewGuid();
-
-            _logger.LogError($"TraceId: {traceId}, Exception: {exception.Message}, StackTrace: {exception.StackTrace}");
-
-            var problemDetails = new ErrorDetails
+            if (exception is CustomException generalException)
             {
-                StatusCode = StatusCodes.Status500InternalServerError,
-                Message = ErrorMessages.UNKNOWN_ERROR,
-                ExceptionMessage = exception.Message
-            };
 
-            httpContext.Response.StatusCode = problemDetails.StatusCode;
+                var traceId = Guid.NewGuid();
 
-            await httpContext.Response
-                .WriteAsJsonAsync(problemDetails, cancellationToken);
+                _logger.LogError($"TraceId: {traceId}, Exception: {exception.Message}, StackTrace: {exception.StackTrace}");
 
-            return true;
+                var problemDetails = generalException.ErrorDetails;
 
+                httpContext.Response.StatusCode = generalException.ErrorDetails.StatusCode;
+
+                await httpContext.Response
+                    .WriteAsJsonAsync(problemDetails, cancellationToken);
+
+                return true;
+            }
+            return false;
         }
     }
 }

@@ -4,11 +4,11 @@ using SchoolAPI.Constants;
 
 namespace SchoolAPI.GlobalExceptionHandling
 {
-    internal sealed class BadRequestExceptionHandler : IExceptionHandler
+    internal sealed class AnyExceptionHandler : IExceptionHandler
     {
-        private readonly ILogger<BadRequestExceptionHandler> _logger;
+        private readonly ILogger<AnyExceptionHandler> _logger;
 
-        public BadRequestExceptionHandler(ILogger<BadRequestExceptionHandler> logger)
+        public AnyExceptionHandler(ILogger<AnyExceptionHandler> logger)
         {
             _logger = logger;
         }
@@ -18,10 +18,6 @@ namespace SchoolAPI.GlobalExceptionHandling
             Exception exception,
             CancellationToken cancellationToken)
         {
-            if (exception is not BadHttpRequestException badRequestException)
-            {
-                return false;
-            }
 
             var traceId = Guid.NewGuid();
 
@@ -29,9 +25,8 @@ namespace SchoolAPI.GlobalExceptionHandling
 
             var problemDetails = new ErrorDetails
             {
-                StatusCode = StatusCodes.Status400BadRequest,
-                Message = ErrorMessages.BAD_REQUEST,
-                ExceptionMessage = badRequestException.Message
+                Message = ErrorMessages.INTERNAL_SERVER_ERROR,
+                StatusCode = StatusCodes.Status500InternalServerError
             };
 
             httpContext.Response.StatusCode = problemDetails.StatusCode;
