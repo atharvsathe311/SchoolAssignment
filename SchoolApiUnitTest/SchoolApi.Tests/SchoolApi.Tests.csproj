@@ -24,8 +24,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\project2\project2.csproj" />
-    <ProjectReference Include="..\..\src\project1\project1.csproj" />
+    <ProjectReference Include="..\..\SchoolAPI\SchoolApi\SchoolApi.csproj" />
+    <ProjectReference Include="..\..\SchoolAPI\SchoolApi.Core\SchoolApi.Core.csproj" />
   </ItemGroup>
 
 </Project>

@@ -3,17 +3,17 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{36F8FDBC-58E6-466D-9F6C-C1A8D1DBC216}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SchoolApiUnitTest", "SchoolApiUnitTest", "{36F8FDBC-58E6-466D-9F6C-C1A8D1DBC216}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "project1.tests", "tests\project1.tests\project1.tests.csproj", "{4D0B885C-5B80-431C-AE99-D5E25A1AD8EE}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SchoolApi.Tests", "SchoolApiUnitTest\SchoolApi.Tests\SchoolApi.Tests.csproj", "{4D0B885C-5B80-431C-AE99-D5E25A1AD8EE}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{314F0C99-383C-4E58-9528-016154E0201B}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SchoolAPI", "SchoolAPI", "{314F0C99-383C-4E58-9528-016154E0201B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "project2", "src\project2\project2.csproj", "{DE045694-C99E-40E0-A8BD-5387327513B2}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SchoolApi.Core", "SchoolAPI\SchoolApi.Core\SchoolApi.Core.csproj", "{DE045694-C99E-40E0-A8BD-5387327513B2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "project1", "src\project1\project1.csproj", "{32BFD8C4-2764-42C3-8D29-052BBD166503}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SchoolApi", "SchoolAPI\SchoolApi\SchoolApi.csproj", "{32BFD8C4-2764-42C3-8D29-052BBD166503}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "project2.tests", "tests\project2.tests\project2.tests.csproj", "{01B69BF1-D494-4F06-81D9-8E842A977C13}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SchoolApi.Core.Tests", "SchoolApiUnitTest\SchoolApi.Core.Tests\SchoolApi.Core.Tests.csproj", "{01B69BF1-D494-4F06-81D9-8E842A977C13}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
