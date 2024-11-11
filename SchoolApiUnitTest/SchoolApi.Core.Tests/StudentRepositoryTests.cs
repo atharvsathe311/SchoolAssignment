@@ -1,27 +1,21 @@
 using Microsoft.EntityFrameworkCore;
 using SchoolApi.Core.Data;
-using SchoolApi.Core.Models;
 using SchoolApi.Core.Repository;
-using Bogus;
+using SchoolApi.Core.Tests.Helper;
 
 namespace SchoolApiUnitTest
 {
-    public class StudentRepositoryTests
+    public class StudentRepositoryTests : IDisposable
     {
-        private readonly Faker<Student> _studentFaker;
+        private readonly FakeDataCreator _dataCreator;
+        private readonly SchoolDbContext _context;
+        private readonly StudentRepository _repository;
 
         public StudentRepositoryTests()
         {
-            _studentFaker = new Faker<Student>()
-                .RuleFor(s => s.FirstName, f => f.Name.FirstName())
-                .RuleFor(s => s.LastName, f => f.Name.LastName())
-                .RuleFor(s => s.Email, f => f.Internet.Email())
-                .RuleFor(s => s.Phone, f => f.Phone.PhoneNumber("9#########"))
-                .RuleFor(s => s.BirthDate, f => f.Date.Past(20))
-                .RuleFor(s => s.Age, (f, s) => DateTime.Now.Year - s.BirthDate.Value.Year)
-                .RuleFor(s => s.Created, f => f.Date.Past())
-                .RuleFor(s => s.Updated, f => f.Date.Recent())
-                .RuleFor(s => s.IsActive, f => f.Random.Bool(0.75f));
+            _dataCreator = new FakeDataCreator();
+            _context = GetInMemoryDbContext();
+            _repository = new StudentRepository(_context);
         }
 
         private SchoolDbContext GetInMemoryDbContext()
@@ -37,7 +31,7 @@ namespace SchoolApiUnitTest
 
         private void SeedData(SchoolDbContext context)
         {
-            context.Students.AddRange(_studentFaker.Generate(10));
+            context.Students.AddRange(_dataCreator.StudentFaker.Generate(10));
             context.SaveChanges();
         }
 
@@ -45,17 +39,14 @@ namespace SchoolApiUnitTest
         public async Task CreateStudentAsync_ShouldAddStudent()
         {
             // Arrange
-            using var context = GetInMemoryDbContext();
-            var repository = new StudentRepository(context);
-
-            var newStudent = _studentFaker.Generate();
+            var newStudent = _dataCreator.StudentFaker.Generate();
             newStudent.Created = DateTime.UtcNow;
             newStudent.Updated = DateTime.UtcNow;
             newStudent.IsActive = true;
 
             // Act
-            var result = await repository.CreateStudentAsync(newStudent);
-            var students = await context.Students.ToListAsync();
+            var result = await _repository.CreateStudentAsync(newStudent);
+            var students = await _context.Students.ToListAsync();
 
             // Assert
             Assert.Contains(result, students);
@@ -73,15 +64,11 @@ namespace SchoolApiUnitTest
         [Fact]
         public async Task GetAllStudentAsync_ShouldReturnActiveStudents_WithPagination()
         {
-            // Arrange
-            using var context = GetInMemoryDbContext();
-            var repository = new StudentRepository(context);
-
             // Act
-            var (students, count) = await repository.GetAllStudentAsync(1, 5, "");
+            var (students, count) = await _repository.GetAllStudentAsync(1, 5, "");
 
             // Assert
-            Assert.Equal(context.Students.Count(s => s.IsActive), count);
+            Assert.Equal(_context.Students.Count(s => s.IsActive), count);
             Assert.True(students.Count() <= 5);
             Assert.All(students, s => Assert.True(s.IsActive));
             Assert.All(students, s =>
@@ -100,14 +87,11 @@ namespace SchoolApiUnitTest
         public async Task GetAllStudentAsync_ShouldReturnEmpty_WhenNoActiveStudents()
         {
             // Arrange
-            using var context = GetInMemoryDbContext();
-            var repository = new StudentRepository(context);
-
-            context.Students.RemoveRange(context.Students);
-            await context.SaveChangesAsync();
+            _context.Students.RemoveRange(_context.Students);
+            await _context.SaveChangesAsync();
 
             // Act
-            var (students, count) = await repository.GetAllStudentAsync(1, 5, "");
+            var (students, count) = await _repository.GetAllStudentAsync(1, 5, "");
 
             // Assert
             Assert.Empty(students);
@@ -118,14 +102,11 @@ namespace SchoolApiUnitTest
         public async Task GetAllStudentAsync_WithSearchTerm_ShouldReturnFilteredStudents()
         {
             // Arrange
-            using var context = GetInMemoryDbContext();
-            var repository = new StudentRepository(context);
-
-            var testStudent = context.Students.FirstOrDefault(s => s.IsActive);
+            var testStudent = _context.Students.FirstOrDefault(s => s.IsActive);
             var searchTerm = testStudent?.FirstName ?? "";
 
             // Act
-            var (students, count) = await repository.GetAllStudentAsync(1, 10, searchTerm);
+            var (students, count) = await _repository.GetAllStudentAsync(1, 10, searchTerm);
 
             // Assert
             Assert.Contains(students, s => s.FirstName.Contains(searchTerm));
@@ -145,13 +126,10 @@ namespace SchoolApiUnitTest
         public async Task GetStudentByIdAsync_ShouldReturnStudent_WhenStudentExists()
         {
             // Arrange
-            using var context = GetInMemoryDbContext();
-            var repository = new StudentRepository(context);
-
-            var existingStudent = context.Students.FirstOrDefault();
+            var existingStudent = _context.Students.FirstOrDefault();
 
             // Act
-            var student = await repository.GetStudentByIdAsync(existingStudent.StudentId);
+            var student = await _repository.GetStudentByIdAsync(existingStudent.StudentId);
 
             // Assert
             Assert.NotNull(student);
@@ -169,12 +147,8 @@ namespace SchoolApiUnitTest
         [Fact]
         public async Task GetStudentByIdAsync_ShouldReturnNull_WhenStudentDoesNotExist()
         {
-            // Arrange
-            using var context = GetInMemoryDbContext();
-            var repository = new StudentRepository(context);
-
             // Act
-            var student = await repository.GetStudentByIdAsync(999);
+            var student = await _repository.GetStudentByIdAsync(999);
 
             // Assert
             Assert.Null(student);
@@ -184,12 +158,10 @@ namespace SchoolApiUnitTest
         public async Task DuplicateChecker_ShouldReturnTrue_WhenDuplicateEmailExists()
         {
             // Arrange
-            using var context = GetInMemoryDbContext();
-            var repository = new StudentRepository(context);
-            var existingStudent = await context.Students.FirstOrDefaultAsync();
+            var existingStudent = await _context.Students.FirstOrDefaultAsync();
 
             // Act
-            var result = await repository.DuplicateEntriesChecker(existingStudent);
+            var result = await _repository.DuplicateEntriesChecker(existingStudent);
 
             // Assert
             Assert.True(result);
@@ -199,12 +171,10 @@ namespace SchoolApiUnitTest
         public async Task DuplicateChecker_ShouldReturnFalse_WhenNoDuplicateEmailExists()
         {
             // Arrange
-            using var context = GetInMemoryDbContext();
-            var repository = new StudentRepository(context);
-            var nonExistingEmailStudent = _studentFaker.Generate();
+            var nonExistingEmailStudent = _dataCreator.StudentFaker.Generate();
 
             // Act
-            var result = await repository.DuplicateEntriesChecker(nonExistingEmailStudent);
+            var result = await _repository.DuplicateEntriesChecker(nonExistingEmailStudent);
 
             // Assert
             Assert.False(result);
@@ -214,12 +184,10 @@ namespace SchoolApiUnitTest
         public async Task DuplicateChecker_ShouldReturnTrue_WhenDuplicatePhoneExists()
         {
             // Arrange
-            using var context = GetInMemoryDbContext();
-            var repository = new StudentRepository(context);
-            var existingStudent = await context.Students.FirstOrDefaultAsync();
+            var existingStudent = await _context.Students.FirstOrDefaultAsync();
 
             // Act
-            var result = await repository.DuplicateEntriesChecker(existingStudent);
+            var result = await _repository.DuplicateEntriesChecker(existingStudent);
 
             // Assert
             Assert.True(result);
@@ -229,17 +197,18 @@ namespace SchoolApiUnitTest
         public async Task DuplicateChecker_ShouldReturnFalse_WhenNoDuplicatePhoneExists()
         {
             // Arrange
-            using var context = GetInMemoryDbContext();
-            var repository = new StudentRepository(context);
-            var nonExistingPhoneStudent = _studentFaker.Generate();
+            var nonExistingPhoneStudent = _dataCreator.StudentFaker.Generate();
 
             // Act
-            var result = await repository.DuplicateEntriesChecker(nonExistingPhoneStudent);
+            var result = await _repository.DuplicateEntriesChecker(nonExistingPhoneStudent);
 
             // Assert
             Assert.False(result);
         }
+
+        public void Dispose()
+        {
+            _context.Dispose();
+        }
     }
 }
-
-
