@@ -11,7 +11,6 @@ namespace UserAPI.Controllers
 {
     [ApiController]
     [Route("[controller]")]
-    [Authorize(Roles = "Admin")]
     public class UserController : ControllerBase
     {
         private readonly IUserRepository _userRepository;
@@ -24,6 +23,7 @@ namespace UserAPI.Controllers
         }
 
         [HttpGet]
+        [Authorize(Roles = "Admin,Teacher")]
         public async Task<ActionResult<IEnumerable<UserGetDTO>>> GetUsers()
         {
             var users = await _userRepository.GetAll();
@@ -38,6 +38,7 @@ namespace UserAPI.Controllers
         }
 
         [HttpGet("{id}")]
+        [Authorize(Roles = "Admin,Teacher")]
         public async Task<ActionResult<UserGetDTO>> GetUser(int id)
         {
             var user = await _userRepository.GetById(id);
@@ -52,6 +53,7 @@ namespace UserAPI.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult<UserGetDTO>> AddUser(UserPostDTO userPostDTO)
         {
             var user = _mapper.Map<User>(userPostDTO);
@@ -73,6 +75,7 @@ namespace UserAPI.Controllers
         }
 
         [HttpPut("{id}")]
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult<UserGetDTO>> UpdateUser(int id, UserUpdateDTO userUpdateDTO)
         {
             var existingUser = await _userRepository.GetById(id);
@@ -111,6 +114,7 @@ namespace UserAPI.Controllers
         }
 
         [HttpDelete("{id}")]
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult<UserGetDTO>> DeleteUser(int id)
         {
             var user = await _userRepository.GetById(id);

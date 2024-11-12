@@ -31,7 +31,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\SchoolApi.Core\SchoolApi.Core.csproj" />
-    <!-- <ProjectReference Include="..\..\Users\UserAPI\UserAPI.csproj" />-->
   </ItemGroup>
 
 

@@ -7,6 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using SchoolAPI.GlobalExceptionHandling;
+using Serilog;
 using UserAPI.Business.Data;
 using UserAPI.Business.Repository;
 using UserAPI.Business.Repository.Interfaces;
@@ -18,10 +19,16 @@ using UserAPI.Helper;
 var builder = WebApplication.CreateBuilder(args);
 var serverVersion = ServerVersion.AutoDetect(builder.Configuration.GetConnectionString("SchoolUserDb"));
 
+Log.Logger = new LoggerConfiguration()
+    .MinimumLevel.Debug()
+    .WriteTo.Console()
+    .WriteTo.File("logs/log-.txt", rollingInterval: RollingInterval.Day)
+    .CreateLogger();
 
 builder.Services.AddControllers(options =>
 {
     options.Filters.Add<ValidationFilter>();
+    options.Filters.Add<APILoggingFilter>();
 }).ConfigureApiBehaviorOptions(options =>
 {
     options.SuppressModelStateInvalidFilter = true;
