@@ -6,34 +6,22 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
-using SchoolApi.Core.Data;
-using SchoolApi.Core.Repository;
-using SchoolApi.Core.Service;
-using SchoolApi.Filters;
-using SchoolAPI.Filters;
 using SchoolAPI.GlobalExceptionHandling;
-using SchoolAPI.Helper;
-using Serilog;
+using UserAPI.Business.Data;
+using UserAPI.Business.Repository;
+using UserAPI.Business.Repository.Interfaces;
+using UserAPI.Business.Services;
+using UserAPI.Business.Services.Interfaces;
+using UserAPI.Filters;
+using UserAPI.Helper;
 
 var builder = WebApplication.CreateBuilder(args);
+var serverVersion = ServerVersion.AutoDetect(builder.Configuration.GetConnectionString("SchoolUserDb"));
 
-Log.Logger = new LoggerConfiguration()
-    .MinimumLevel.Debug()
-    .WriteTo.Console()
-    .WriteTo.File("logs/log-.txt", rollingInterval: RollingInterval.Day)
-    .CreateLogger();
-
-var serverVersion = ServerVersion.AutoDetect(builder.Configuration.GetConnectionString("ConnectionStrings"));
-builder.Services.AddDbContext<SchoolDbContext>(
-    options => options
-    .UseMySql(builder.Configuration.GetConnectionString("ConnectionStrings"), serverVersion)
-    .EnableDetailedErrors()
-    .EnableSensitiveDataLogging());
 
 builder.Services.AddControllers(options =>
 {
     options.Filters.Add<ValidationFilter>();
-    options.Filters.Add<APILoggingFilter>();
 }).ConfigureApiBehaviorOptions(options =>
 {
     options.SuppressModelStateInvalidFilter = true;
@@ -79,29 +67,29 @@ builder.Services.AddSwaggerGen(opt =>
                     Id="Bearer"
                 }
             },
-            Array.Empty<string>()
+            new string[]{}
         }
     });
-
-    opt.SwaggerDoc("v1", new OpenApiInfo
-    {
-        Title = "School API",
-        Version = "1.0",
-        Description = "API for managing student records in the school system.Provides endpoints for adding, updating, retrieving, and deactivating students.Requires authorization, with specific role-based access control for Admin and Teacher roles."
-    });
-
-    var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
-    var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
-    opt.IncludeXmlComments(xmlPath);
+    opt.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, $"{Assembly.GetExecutingAssembly().GetName().Name}.xml"));
 });
 
-builder.Services.AddAutoMapper(typeof(AutoMapperProfiles).Assembly);
-builder.Services.AddScoped<IStudentService, StudentService>();
-builder.Services.AddScoped<IStudentRepository, StudentRepository>();
+
+
+builder.Services.AddDbContext<UserAPIDbContext>(
+    options => options
+    .UseMySql(builder.Configuration.GetConnectionString("SchoolUserDb"), serverVersion)
+    .EnableDetailedErrors()
+    .EnableSensitiveDataLogging());
+
+builder.Services.AddScoped<IUserRepository,UserRepository>();
+builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddAutoMapper(typeof(AutoMapperProfileUser).Assembly);
 builder.Services.AddFluentValidationAutoValidation();
 builder.Services.AddValidatorsFromAssemblyContaining<Program>();
 
+
 builder.Services.AddExceptionHandler<GeneraliseExceptionHandler>();
+
 
 builder.Services.AddCors(options =>
 {
@@ -115,21 +103,17 @@ builder.Services.AddCors(options =>
 });
 
 var app = builder.Build();
+app.UseExceptionHandler(_ => { });
 
-// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
 }
 
-app.UseExceptionHandler(o => { });
-
 app.UseHttpsRedirection();
-
 app.UseAuthentication();
 app.UseAuthorization();
-
+app.UseCors("AllowAll");
 app.MapControllers();
-
 app.Run();
