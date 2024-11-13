@@ -1,4 +1,3 @@
-using System.Reflection;
 using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
@@ -43,13 +42,14 @@ namespace CommonLibrary.Constants
                         ValidateAudience = true,
                         ValidAudience = builder.Configuration["Jwt:Audience"],
                         ValidIssuer = builder.Configuration["Jwt:Issuer"],
+                        
                         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"])),
                         ValidateIssuerSigningKey = true
                     };
                 });
         }
 
-        public static void AddSwaggerDocumentation(this WebApplicationBuilder builder, string apiTitle, string apiVersion, string description)
+        public static void AddSwaggerDocumentation(this WebApplicationBuilder builder, string apiTitle, string apiVersion, string description , string xmlPath)
         {
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen(opt =>
@@ -86,8 +86,9 @@ namespace CommonLibrary.Constants
                     Description = description
                 });
 
-                var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
-                var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+                // var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+                // var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+
                 opt.IncludeXmlComments(xmlPath);
             });
         }

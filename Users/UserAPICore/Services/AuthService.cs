@@ -3,7 +3,6 @@ using System.Security.Claims;
 using System.Text;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
-using UserAPI.Business.Data;
 using UserAPI.Business.Models;
 using UserAPI.Business.Services.Interfaces;
 using UserAPI.Core.GeneralModels;
@@ -12,12 +11,10 @@ namespace UserAPI.Business.Services
 {
     public class AuthService : IAuthService
     {
-        private readonly UserAPIDbContext _context;
-        private readonly IConfiguration _configuration;
+                private readonly IConfiguration _configuration;
 
-        public AuthService(UserAPIDbContext context, IConfiguration configuration)
+        public AuthService(IConfiguration configuration)
         {
-            _context = context;
             _configuration = configuration;
         }
 
@@ -25,7 +22,7 @@ namespace UserAPI.Business.Services
         {
             var claims = new List<Claim>
             {
-                new("Username", user.Username),
+                new("Email", user.Email),
                 new("UserId", user.UserId.ToString())
             };
 

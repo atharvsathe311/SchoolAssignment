@@ -34,6 +34,7 @@ namespace UserAPICore.Migrations
                         .HasColumnType("datetime(6)");
 
                     b.Property<string>("Email")
+                        .IsRequired()
                         .HasColumnType("longtext");
 
                     b.Property<bool>("IsActive")
@@ -43,13 +44,11 @@ namespace UserAPICore.Migrations
                         .HasColumnType("tinyint(1)");
 
                     b.Property<string>("Password")
+                        .IsRequired()
                         .HasColumnType("longtext");
 
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("datetime(6)");
-
-                    b.Property<string>("Username")
-                        .HasColumnType("longtext");
 
                     b.HasKey("UserId");
 

@@ -1,3 +1,4 @@
+using System.Reflection;
 using CommonLibrary.Constants;
 using FluentValidation;
 using FluentValidation.AspNetCore;
@@ -8,10 +9,13 @@ using SchoolAPI.Helper;
 
 var builder = WebApplication.CreateBuilder(args);
 
+var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+
 builder.AddSerilogLogging();
 builder.AddMySqlDbContext<SchoolDbContext>("ConnectionStrings");
 builder.AddJwtAuthentication();
-builder.AddSwaggerDocumentation("School API", "v1", "API for managing student records in the school system.");
+builder.AddSwaggerDocumentation("School API", "v1", "API for managing student records in the school system.",xmlPath);
 builder.AddCorsPolicy("AllowAll");
 builder.AddControllersWithFilters();
 builder.AddExceptionHandling();

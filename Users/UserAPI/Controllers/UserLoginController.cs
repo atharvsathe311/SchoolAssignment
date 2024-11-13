@@ -42,7 +42,7 @@ namespace UserAPI.Controllers
         [HttpPost]
         public async Task<ActionResult<string>> Login(LoginRequest loginRequest)
         {
-            var user = await _userRepository.GetByUsername(loginRequest.Username) ?? throw new CustomException(ErrorMessages.InvalidCredentialsExceptionDetails);
+            var user = await _userRepository.GetByEmail(loginRequest.Email) ?? throw new CustomException(ErrorMessages.InvalidCredentialsExceptionDetails);
             
             if (!BCrypt.Net.BCrypt.EnhancedVerify(loginRequest.Password, user.Password))
             {

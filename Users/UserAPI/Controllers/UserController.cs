@@ -6,11 +6,13 @@ using UserAPI.DTO;
 using AutoMapper;
 using CommonLibrary.Constants;
 using CommonLibrary.Exceptions;
+using CommonLibrary.GeneralModels;
 
 namespace UserAPI.Controllers
 {
     [ApiController]
     [Route("[controller]")]
+    [Authorize]
     public class UserController : ControllerBase
     {
         private readonly IUserRepository _userRepository;
@@ -30,7 +32,6 @@ namespace UserAPI.Controllers
         /// Accessible by Admin and Teacher roles.
         /// </remarks>
         [HttpGet]
-        [Authorize(Roles = "Admin,Teacher")]
         [ProducesResponseType(typeof(IEnumerable<UserGetDTO>), 200)] 
         [ProducesResponseType(401)]  
         [ProducesResponseType(403)]  
@@ -56,7 +57,6 @@ namespace UserAPI.Controllers
         /// Accessible by Admin and Teacher roles.
         /// </remarks>
         [HttpGet("{id}")]
-        [Authorize(Roles = "Admin,Teacher")]
         [ProducesResponseType(typeof(UserGetDTO), 200)]  
         [ProducesResponseType(401)]  
         [ProducesResponseType(403)]  
@@ -83,7 +83,7 @@ namespace UserAPI.Controllers
         /// Accessible only by Admin role.
         /// </remarks>
         [HttpPost]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = UserRoles.Admin)]
         [ProducesResponseType(typeof(UserGetDTO), 200)]  
         [ProducesResponseType(400)]  
         [ProducesResponseType(401)]  
@@ -117,7 +117,7 @@ namespace UserAPI.Controllers
         /// Accessible only by Admin role.
         /// </remarks>
         [HttpPut("{id}")]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = UserRoles.Admin)]
         [ProducesResponseType(typeof(UserGetDTO), 200)]  
         [ProducesResponseType(400)]  
         [ProducesResponseType(401)]  
@@ -133,14 +133,12 @@ namespace UserAPI.Controllers
             }
 
             bool isUpdated = false;
-            if (!string.IsNullOrEmpty(userUpdateDTO.Username))
-            {
-                existingUser.Username = userUpdateDTO.Username;
-                isUpdated = true;
-            }
 
             if (!string.IsNullOrEmpty(userUpdateDTO.Email))
             {
+                var alreadyRegisteredUser = await _userRepository.GetByEmail(userUpdateDTO.Email);
+                if (alreadyRegisteredUser != null)
+                    throw new CustomException(ErrorMessages.UserExistsExceptionDetails);
                 existingUser.Email = userUpdateDTO.Email;
                 isUpdated = true;
             }
@@ -169,7 +167,7 @@ namespace UserAPI.Controllers
         /// Accessible only by Admin role.
         /// </remarks>
         [HttpDelete("{id}")]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = UserRoles.Admin)]
         [ProducesResponseType(200)]  
         [ProducesResponseType(401)]  
         [ProducesResponseType(403)]  

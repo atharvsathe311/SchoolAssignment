@@ -19,12 +19,10 @@ namespace CommonLibrary.GlobalExceptionHandling
             Exception exception,
             CancellationToken cancellationToken)
         {
+            var traceId = Guid.NewGuid();
 
             if (exception is CustomException generalException)
             {
-
-                var traceId = Guid.NewGuid();
-
                 _logger.LogError($"TraceId: {traceId}, Exception: {generalException.Message}, StackTrace: {generalException.StackTrace}");
 
                 var problemDetails = generalException.ErrorDetails;
@@ -39,9 +37,6 @@ namespace CommonLibrary.GlobalExceptionHandling
             
             if(exception is ValidationException validationException)
             {
-
-                var traceId = Guid.NewGuid();
-
                 _logger.LogError($"TraceId: {traceId}, Exception: {validationException.Message}, StackTrace: {validationException.StackTrace}");
 
                 var problemDetails = validationException.ValidationErrors;
@@ -55,9 +50,7 @@ namespace CommonLibrary.GlobalExceptionHandling
 
             }
 
-            var traceIdGeneral = Guid.NewGuid();
-
-            _logger.LogError($"TraceId: {traceIdGeneral}, Exception: {exception.Message}, StackTrace: {exception.StackTrace}");
+            _logger.LogError($"TraceId: {traceId}, Exception: {exception.Message}, StackTrace: {exception.StackTrace}");
 
             var problemDetailsGeneral = new ErrorDetails
             {

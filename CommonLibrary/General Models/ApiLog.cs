@@ -2,8 +2,8 @@ namespace CommonLibrary.GeneralModels
 {
     public class ApiLog
     {
-        public required string Method {get;set;} 
-        public required string Path {get;set;}
+        public string Method {get;set;} = string.Empty;
+        public string Path {get;set;} = string.Empty ;
         public int StatusCode {get;set;}
         public DateTime Timestamp {get;set;}
     }

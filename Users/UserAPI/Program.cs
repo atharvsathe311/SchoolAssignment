@@ -1,3 +1,4 @@
+using System.Reflection;
 using CommonLibrary.Constants;
 using FluentValidation;
 using FluentValidation.AspNetCore;
@@ -9,11 +10,13 @@ using UserAPI.Business.Services.Interfaces;
 using UserAPI.Helper;
 
 var builder = WebApplication.CreateBuilder(args);
+var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
 
 builder.AddSerilogLogging();
 builder.AddMySqlDbContext<UserAPIDbContext>("SchoolUserDb");
 builder.AddJwtAuthentication();
-builder.AddSwaggerDocumentation("User API", "v1", "API for managing user data.");
+builder.AddSwaggerDocumentation("User API", "v1", "API for managing user data.",xmlPath);
 builder.AddCorsPolicy("AllowAll");
 builder.AddControllersWithFilters();
 builder.AddExceptionHandling();

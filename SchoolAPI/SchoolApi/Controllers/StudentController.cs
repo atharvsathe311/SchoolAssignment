@@ -16,6 +16,7 @@ namespace SchoolAPI.Controllers
     /// </summary>
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class StudentController : ControllerBase
     {
         private readonly IStudentService _studentService;
@@ -40,7 +41,7 @@ namespace SchoolAPI.Controllers
         /// <response code="403">Forbidden - User does not have the required role.</response>
         /// <response code="500">An internal server error occurred.</response>
         [HttpPost]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = UserRoles.Admin)]
         [ProducesResponseType(typeof(StudentGetDTO), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ErrorDetails), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -76,7 +77,6 @@ namespace SchoolAPI.Controllers
         /// <response code="403">Forbidden - User does not have the required role.</response>
         /// <response code="500">An internal server error occurred.</response>
         [HttpGet]
-        [Authorize(Roles = "Admin,Teacher")]
         [ProducesResponseType(typeof(GetAllStudentsDTO), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
@@ -105,7 +105,6 @@ namespace SchoolAPI.Controllers
         /// <response code="403">Forbidden - User does not have the required role.</response>
         /// <response code="404">The student with the given ID was not found.</response>
         [HttpGet("{id}")]
-        [Authorize(Roles = "Admin,Teacher")]
         [ProducesResponseType(typeof(StudentGetDTO), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
@@ -132,7 +131,7 @@ namespace SchoolAPI.Controllers
         /// <response code="403">Forbidden - User does not have the required role.</response>
         /// <response code="404">The student with the given ID was not found.</response>
         [HttpPut]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = UserRoles.Admin)]
         [ProducesResponseType(typeof(StudentGetDTO), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ErrorDetails), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -198,7 +197,7 @@ namespace SchoolAPI.Controllers
         /// <response code="403">Forbidden - User does not have the required role.</response>
         /// <response code="404">The student with the given ID was not found.</response>
         [HttpDelete("{id}")]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = UserRoles.Admin)]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]

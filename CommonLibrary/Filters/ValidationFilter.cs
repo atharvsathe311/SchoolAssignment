@@ -1,9 +1,7 @@
-using System.Text.Json;
 using Microsoft.AspNetCore.Mvc.Filters;
 using CommonLibrary.GeneralModels;
 using CommonLibrary.Exceptions;
 using CommonLibrary.Constants;
-using CommonLibrary.Exceptions;
 
 namespace CommonLibrary.Filters
 {
@@ -18,10 +16,10 @@ namespace CommonLibrary.Filters
             if (!context.ModelState.IsValid)
             {
                 var ExceptionErrors = context.ModelState
-                        .Where(e => e.Value.Errors.Count > 0)
+                        .Where(e => e.Value?.Errors.Count > 0)
                         .ToDictionary(
                             kvp => kvp.Key,
-                            kvp => kvp.Value.Errors.Select(err => err.ErrorMessage).ToList()
+                            kvp => kvp.Value?.Errors.Select(err => err.ErrorMessage).ToList()
                         );
                          
                 var errorDetails = new ValidationErrors
