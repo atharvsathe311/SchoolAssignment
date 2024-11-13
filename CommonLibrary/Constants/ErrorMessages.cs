@@ -6,6 +6,8 @@ namespace CommonLibrary.Constants
     {
         public const string ValidationError = "Invalid Inputs";
         public const string USER_NOT_FOUND = "User Not Found.";
+        public const string STUDENT_NOT_FOUND = "Student Not Found.";
+        public const string STUDENT_EXISTS = "Student Already Exist";  
         public const string USER_CREATE_FAILED = "Failed to create user.";
         public const string NOTHING_TO_UPDATE = "Nothing to Update.";
         public const string USER_EXISTS = "User Already Exist";         
@@ -45,6 +47,22 @@ namespace CommonLibrary.Constants
             Message = INVALID_CREDENTIALS,
             StatusCode = StatusCodes.Status400BadRequest
         };
+
+        public static ErrorDetails StudentNotFoundExceptionDetails =  new ErrorDetails() 
+        {
+            Message = STUDENT_NOT_FOUND ,
+            StatusCode = StatusCodes.Status404NotFound
+        };
+
+        public static ErrorDetails StudentExistsExceptionDetails =  new ErrorDetails() 
+        {
+            Message = STUDENT_EXISTS ,
+            StatusCode = StatusCodes.Status400BadRequest
+        };
+        public const string BIRTH_DATE_REQUIRED = "BirthDate is required";
+        public const string INVALID_BIRTH_DATE = "Invalid BirthDate";
+
+        
 
         
 

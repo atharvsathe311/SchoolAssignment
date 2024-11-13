@@ -1,9 +1,9 @@
 using Microsoft.AspNetCore.Mvc;
-using UserAPI.Business.Models;
 using UserAPI.Business.Repository.Interfaces;
 using UserAPI.Business.Services.Interfaces;
-using UserAPI.Constants;
-using UserAPI.Exceptions;
+using CommonLibrary.Constants;
+using CommonLibrary.Exceptions;
+using UserAPI.Core.GeneralModels;
 
 namespace UserAPI.Controllers
 {
@@ -42,19 +42,14 @@ namespace UserAPI.Controllers
         [HttpPost]
         public async Task<ActionResult<string>> Login(LoginRequest loginRequest)
         {
-            var user = await _userRepository.GetByUsername(loginRequest.Username);
-
-            if (user == null)
-            {
-                throw new CustomException(ErrorMessages.InvalidCredentialsExceptionDetails);
-            }
-
+            var user = await _userRepository.GetByUsername(loginRequest.Username) ?? throw new CustomException(ErrorMessages.InvalidCredentialsExceptionDetails);
+            
             if (!BCrypt.Net.BCrypt.EnhancedVerify(loginRequest.Password, user.Password))
             {
                 throw new CustomException(ErrorMessages.InvalidCredentialsExceptionDetails);
             }
 
-            var token = _authService.Login(loginRequest);
+            var token = _authService.Login(loginRequest,user);
             return Ok(token);
         }
     }

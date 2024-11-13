@@ -6,6 +6,7 @@ using Microsoft.IdentityModel.Tokens;
 using UserAPI.Business.Data;
 using UserAPI.Business.Models;
 using UserAPI.Business.Services.Interfaces;
+using UserAPI.Core.GeneralModels;
 
 namespace UserAPI.Business.Services
 {
@@ -20,24 +21,21 @@ namespace UserAPI.Business.Services
             _configuration = configuration;
         }
 
-        public string Login(LoginRequest loginRequest)
+        public string Login(LoginRequest loginRequest,User user)
         {
-            var user = _context.Users.FirstOrDefault(u => u.Username == loginRequest.Username);
-
             var claims = new List<Claim>
             {
-                new Claim("Username", user.Username),
+                new("Username", user.Username),
+                new("UserId", user.UserId.ToString())
             };
 
             if (user.IsAdmin)
             {
-                claims.Add(new Claim("UserId", user.UserId.ToString()));
                 claims.Add(new Claim(ClaimTypes.Role, "Admin"));
             }
 
             if (!user.IsAdmin)
             {
-                claims.Add(new Claim("UserId", user.UserId.ToString()));
                 claims.Add(new Claim(ClaimTypes.Role, "Teacher"));
             }
 

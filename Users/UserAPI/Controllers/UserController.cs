@@ -4,6 +4,8 @@ using UserAPI.Business.Models;
 using UserAPI.Business.Repository.Interfaces;
 using UserAPI.DTO;
 using AutoMapper;
+using CommonLibrary.Constants;
+using CommonLibrary.Exceptions;
 
 namespace UserAPI.Controllers
 {

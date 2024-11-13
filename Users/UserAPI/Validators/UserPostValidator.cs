@@ -1,5 +1,5 @@
+using CommonLibrary.Constants;
 using FluentValidation;
-using UserAPI.Constants;
 using UserAPI.DTO;
 
 namespace UserAPI.Validators

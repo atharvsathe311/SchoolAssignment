@@ -1,4 +1,4 @@
-namespace UserAPI.Business.Models
+namespace UserAPI.Core.GeneralModels
 {
     public class LoginRequest
     {

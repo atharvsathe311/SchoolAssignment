@@ -1,5 +1,5 @@
 using FluentValidation;
-using SchoolAPI.Constants;
+using CommonLibrary.Constants;
 using SchoolAPI.DTO;
 
 namespace SchoolAPI.Validators
