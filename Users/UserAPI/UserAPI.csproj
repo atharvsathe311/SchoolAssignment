@@ -30,6 +30,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\UserAPICore\UserAPICore.csproj" />
+    <ProjectReference Include="..\..\CommonLibrary\CommonLibrary.csproj" />
   </ItemGroup>
 
 </Project>

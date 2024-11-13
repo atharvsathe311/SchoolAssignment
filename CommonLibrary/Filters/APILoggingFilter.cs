@@ -1,9 +1,9 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
-using SchoolApi.Core.GenearalModels;
+using CommonLibrary.GeneralModels;
 using Serilog;
 
-namespace SchoolApi.Filters
+namespace CommonLibrary.Filters
 {
     public class APILoggingFilter : IActionFilter
     {

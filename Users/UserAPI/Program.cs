@@ -6,14 +6,14 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
-using SchoolAPI.GlobalExceptionHandling;
+using CommonLibrary.GlobalExceptionHandling;
 using Serilog;
 using UserAPI.Business.Data;
 using UserAPI.Business.Repository;
 using UserAPI.Business.Repository.Interfaces;
 using UserAPI.Business.Services;
 using UserAPI.Business.Services.Interfaces;
-using UserAPI.Filters;
+using CommonLibrary.Filters;
 using UserAPI.Helper;
 
 var builder = WebApplication.CreateBuilder(args);

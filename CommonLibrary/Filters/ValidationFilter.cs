@@ -1,11 +1,11 @@
 using System.Text.Json;
 using Microsoft.AspNetCore.Mvc.Filters;
-using SchoolApi.Core.GenearalModels;
-using SchoolApi.Exceptions;
-using SchoolAPI.Constants;
-using SchoolAPI.Exceptions;
+using CommonLibrary.GeneralModels;
+using CommonLibrary.Exceptions;
+using CommonLibrary.Constants;
+using CommonLibrary.Exceptions;
 
-namespace SchoolAPI.Filters
+namespace CommonLibrary.Filters
 {
     public class ValidationFilter : IActionFilter
     {

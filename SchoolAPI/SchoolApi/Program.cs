@@ -9,9 +9,8 @@ using Microsoft.OpenApi.Models;
 using SchoolApi.Core.Data;
 using SchoolApi.Core.Repository;
 using SchoolApi.Core.Service;
-using SchoolApi.Filters;
-using SchoolAPI.Filters;
-using SchoolAPI.GlobalExceptionHandling;
+using CommonLibrary.Filters;
+using CommonLibrary.GlobalExceptionHandling;
 using SchoolAPI.Helper;
 using Serilog;
 
@@ -100,6 +99,8 @@ builder.Services.AddScoped<IStudentService, StudentService>();
 builder.Services.AddScoped<IStudentRepository, StudentRepository>();
 builder.Services.AddFluentValidationAutoValidation();
 builder.Services.AddValidatorsFromAssemblyContaining<Program>();
+
+
 
 builder.Services.AddExceptionHandler<GeneraliseExceptionHandler>();
 

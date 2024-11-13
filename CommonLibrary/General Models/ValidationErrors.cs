@@ -1,4 +1,4 @@
-namespace SchoolApi.Core.GenearalModels
+namespace CommonLibrary.GeneralModels
 {
     public class ValidationErrors:ErrorDetails
     {

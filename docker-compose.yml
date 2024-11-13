@@ -10,3 +10,5 @@ services:
       dockerfile: SchoolAPI/SchoolApi/Dockerfile
     ports:
       - 5039:5039
+    extra_hosts:
+    - "host.docker.internal:host-gateway"

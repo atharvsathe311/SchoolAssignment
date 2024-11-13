@@ -1,6 +1,6 @@
-using UserAPI.GeneralModels;
+using CommonLibrary.GeneralModels;
 
-namespace UserAPI.Exceptions
+namespace CommonLibrary.Exceptions
 {
     public class CustomException:Exception
     {

@@ -1,6 +1,6 @@
-using SchoolApi.Core.GenearalModels;
+using CommonLibrary.GeneralModels;
 
-namespace SchoolApi.Exceptions
+namespace CommonLibrary.Exceptions
 {
     public class ValidationException:Exception
     {

@@ -1,12 +1,9 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
-using SchoolAPI.Constants;
 using SchoolAPI.DTO;
 using SchoolApi.Core.Models;
 using SchoolApi.Core.Repository;
 using SchoolApi.Core.Service;
-using SchoolAPI.Exceptions;
-using SchoolApi.Core.GenearalModels;
 using Microsoft.AspNetCore.Authorization;
 
 namespace SchoolAPI.Controllers

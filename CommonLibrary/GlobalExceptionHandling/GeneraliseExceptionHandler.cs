@@ -1,12 +1,11 @@
 using Microsoft.AspNetCore.Diagnostics;
-using SchoolApi.Core.GenearalModels;
-using SchoolApi.Exceptions;
-using SchoolAPI.Constants;
-using SchoolAPI.Exceptions;
+using CommonLibrary.Constants;
+using CommonLibrary.Exceptions;
+using CommonLibrary.GeneralModels;
 
-namespace SchoolAPI.GlobalExceptionHandling
+namespace CommonLibrary.GlobalExceptionHandling
 {
-    internal sealed class GeneraliseExceptionHandler : IExceptionHandler
+    public sealed class GeneraliseExceptionHandler : IExceptionHandler
     {
         private readonly ILogger<GeneraliseExceptionHandler> _logger;
 

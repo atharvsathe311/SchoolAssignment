@@ -1,6 +1,5 @@
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
 WORKDIR /app
-EXPOSE 5039
 
 ENV ASPNETCORE_URLS=http://+:5039
 ENV ASPNETCORE_ENVIRONMENT=Development
@@ -21,5 +20,8 @@ RUN dotnet publish "SchoolApi.csproj" -c $configuration -o /app/publish /p:UseAp
 
 FROM base AS final
 WORKDIR /app
+
+EXPOSE 80
+EXPOSE 5039
 COPY --from=publish /app/publish .
 ENTRYPOINT ["dotnet", "SchoolApi.dll"]

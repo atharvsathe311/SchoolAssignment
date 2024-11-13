@@ -1,4 +1,4 @@
-namespace UserAPI.GeneralModels
+namespace CommonLibrary.GeneralModels
 {
     public class ErrorDetails
     {
