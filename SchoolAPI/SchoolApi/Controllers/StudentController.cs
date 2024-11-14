@@ -14,7 +14,7 @@ namespace SchoolAPI.Controllers
     /// <summary>
     /// Handles operations related to students such as adding, updating, deleting, and retrieving student records.
     /// </summary>
-    [Route("api/[controller]")]
+    [Route("[controller]")]
     [ApiController]
     [Authorize]
     public class StudentController : ControllerBase

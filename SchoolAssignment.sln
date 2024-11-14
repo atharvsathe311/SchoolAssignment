@@ -23,6 +23,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UserAPICore", "Users\UserAP
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CommonLibrary", "CommonLibrary\CommonLibrary.csproj", "{6B0DF808-36D6-4269-A8AC-E0BE0338C027}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OcelotGateway", "OcelotGateway\OcelotGateway.csproj", "{28DF0781-CA63-4524-9A74-15FB578EA53C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -57,6 +59,10 @@ Global
 		{6B0DF808-36D6-4269-A8AC-E0BE0338C027}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6B0DF808-36D6-4269-A8AC-E0BE0338C027}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6B0DF808-36D6-4269-A8AC-E0BE0338C027}.Release|Any CPU.Build.0 = Release|Any CPU
+		{28DF0781-CA63-4524-9A74-15FB578EA53C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{28DF0781-CA63-4524-9A74-15FB578EA53C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{28DF0781-CA63-4524-9A74-15FB578EA53C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{28DF0781-CA63-4524-9A74-15FB578EA53C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

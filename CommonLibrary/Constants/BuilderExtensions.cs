@@ -19,7 +19,6 @@ namespace CommonLibrary.Constants
                 .WriteTo.File("logs/log-.txt", rollingInterval: RollingInterval.Day)
                 .CreateLogger();
         }
-
         public static void AddMySqlDbContext<TContext>(this WebApplicationBuilder builder, string connectionStringKey) where TContext : DbContext
         {
             var serverVersion = ServerVersion.AutoDetect(builder.Configuration.GetConnectionString(connectionStringKey));
@@ -28,7 +27,6 @@ namespace CommonLibrary.Constants
                 .EnableDetailedErrors()
                 .EnableSensitiveDataLogging());
         }
-
         public static void AddJwtAuthentication(this WebApplicationBuilder builder)
         {
             builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
@@ -41,14 +39,12 @@ namespace CommonLibrary.Constants
                         ValidateIssuer = true,
                         ValidateAudience = true,
                         ValidAudience = builder.Configuration["Jwt:Audience"],
-                        ValidIssuer = builder.Configuration["Jwt:Issuer"],
-                        
+                        ValidIssuer = builder.Configuration["Jwt:Issuer"],         
                         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"])),
                         ValidateIssuerSigningKey = true
                     };
                 });
         }
-
         public static void AddSwaggerDocumentation(this WebApplicationBuilder builder, string apiTitle, string apiVersion, string description , string xmlPath)
         {
             builder.Services.AddEndpointsApiExplorer();
@@ -92,7 +88,6 @@ namespace CommonLibrary.Constants
                 opt.IncludeXmlComments(xmlPath);
             });
         }
-
         public static void AddCorsPolicy(this WebApplicationBuilder builder, string policyName)
         {
             builder.Services.AddCors(options =>
@@ -105,7 +100,6 @@ namespace CommonLibrary.Constants
                 });
             });
         }
-
         public static void AddControllersWithFilters(this WebApplicationBuilder builder)
         {
             builder.Services.AddControllers(options =>

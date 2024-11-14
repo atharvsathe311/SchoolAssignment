@@ -2,18 +2,16 @@ using Microsoft.AspNetCore.Diagnostics;
 using CommonLibrary.Constants;
 using CommonLibrary.Exceptions;
 using CommonLibrary.GeneralModels;
-using Serilog;
-using CommonLibrary.Filters;
 
 namespace CommonLibrary.GlobalExceptionHandling
 {
-    public sealed class GeneraliseExceptionHandler : IExceptionHandler
+    public sealed class GeneraliseExceptionHandlers : IExceptionHandler
     {
-        private readonly Serilog.ILogger _logger;
+        private readonly ILogger<GeneraliseExceptionHandler> _logger;
 
-        public GeneraliseExceptionHandler()
+        public GeneraliseExceptionHandlers(ILogger<GeneraliseExceptionHandler> logger)
         {
-            _logger = Log.ForContext<APILoggingFilter>();
+            _logger = logger;
         }
 
         public async ValueTask<bool> TryHandleAsync(
@@ -25,7 +23,7 @@ namespace CommonLibrary.GlobalExceptionHandling
 
             if (exception is CustomException generalException)
             {
-                _logger.Error($"TraceId: {traceId}, Exception: {generalException.Message}, StackTrace: {generalException.StackTrace}");
+                _logger.LogError($"TraceId: {traceId}, Exception: {generalException.Message}, StackTrace: {generalException.StackTrace}");
 
                 var problemDetails = generalException.ErrorDetails;
 
@@ -39,7 +37,7 @@ namespace CommonLibrary.GlobalExceptionHandling
             
             if(exception is ValidationException validationException)
             {
-                _logger.Error($"TraceId: {traceId}, Exception: {validationException.Message}, StackTrace: {validationException.StackTrace}");
+                _logger.LogError($"TraceId: {traceId}, Exception: {validationException.Message}, StackTrace: {validationException.StackTrace}");
 
                 var problemDetails = validationException.ValidationErrors;
 
@@ -52,7 +50,7 @@ namespace CommonLibrary.GlobalExceptionHandling
 
             }
 
-            _logger.Error($"TraceId: {traceId}, Exception: {exception.Message}, StackTrace: {exception.StackTrace}");
+            _logger.LogError($"TraceId: {traceId}, Exception: {exception.Message}, StackTrace: {exception.StackTrace}");
 
             var problemDetailsGeneral = new ErrorDetails
             {
@@ -65,8 +63,8 @@ namespace CommonLibrary.GlobalExceptionHandling
             await httpContext.Response
                 .WriteAsJsonAsync(problemDetailsGeneral, cancellationToken);
 
-            _logger.Information("Returned Object: {@ReturnedObject}", problemDetailsGeneral);
             return true;
+            
         }
     }
 }
