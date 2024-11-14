@@ -49,7 +49,7 @@ namespace UserAPI.Controllers
                 throw new CustomException(ErrorMessages.InvalidCredentialsExceptionDetails);
             }
 
-            var token = _authService.Login(loginRequest,user);
+            var token = _authService.Login(user);
             return Ok(token);
         }
     }

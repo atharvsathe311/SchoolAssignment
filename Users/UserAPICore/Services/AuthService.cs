@@ -18,7 +18,7 @@ namespace UserAPI.Business.Services
             _configuration = configuration;
         }
 
-        public string Login(LoginRequest loginRequest,User user)
+        public string Login(User user)
         {
             var claims = new List<Claim>
             {
