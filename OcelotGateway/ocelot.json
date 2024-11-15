@@ -1,41 +1,77 @@
 {
-    "Routes": [
-      {
-        "DownstreamPathTemplate": "/Student/{everything}",
-        "DownstreamScheme": "http",
-        "DownstreamHostAndPorts": [
-          {
-            "Host": "schoolapi",
-            "Port": 5039
-          }
-        ],
-        "UpstreamPathTemplate": "/infinity/service1/{everything}",
-        "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE" ]
-      },
-      {
-        "DownstreamPathTemplate": "/User/{everything}",
-        "DownstreamScheme": "http",
-        "DownstreamHostAndPorts": [
-          {
-            "Host": "userapi",
-            "Port": 5050
-          }
-        ],
-        "UpstreamPathTemplate": "/infinity/service2/{everything}",
-        "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE" ]
-      },
-      {
-        "DownstreamPathTemplate": "/UserLogin/{everything}",
-        "DownstreamScheme": "http",
-        "DownstreamHostAndPorts": [
-          {
-            "Host": "userapi",
-            "Port": 5050
-          }
-        ],
-        "UpstreamPathTemplate": "/infinity/service3/{everything}",
-        "UpstreamHttpMethod": [ "POST" ]
-      }
-    ]
-  }
-  
+  "Routes": [
+    {
+      "DownstreamPathTemplate": "/Student/{everything}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "schoolapi",
+          "Port": 5039
+        }
+      ],
+      "UpstreamPathTemplate": "/infinity/service1/{everything}",
+      "UpstreamHttpMethod": [
+        "GET",
+        "POST",
+        "PUT",
+        "DELETE"
+      ],
+      "SwaggerKey": "schoolapi"
+    },
+    {
+      "DownstreamPathTemplate": "/User/{everything}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "userapi",
+          "Port": 5050
+        }
+      ],
+      "UpstreamPathTemplate": "/infinity/service2/{everything}",
+      "UpstreamHttpMethod": [
+        "GET",
+        "POST",
+        "PUT",
+        "DELETE"
+      ],
+      "SwaggerKey": "userapi"
+    },
+    {
+      "DownstreamPathTemplate": "/UserLogin/{everything}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "userapi",
+          "Port": 5050
+        }
+      ],
+      "UpstreamPathTemplate": "/infinity/service3/{everything}",
+      "UpstreamHttpMethod": [
+        "POST"
+      ],
+      "SwaggerKey": "userapi"
+    }
+  ],
+  "SwaggerEndPoints": [
+    {
+      "Key": "schoolapi",
+      "Config": [
+        {
+          "Name": "School API",
+          "Version": "v1",
+          "Url": "http://schoolapi:5039/swagger/v1/swagger.json"
+        }
+      ]
+    },
+    {
+      "Key": "userapi",
+      "Config": [
+        {
+          "Name": "User API",
+          "Version": "v1",
+          "Url": "http://userapi:5050/swagger/v1/swagger.json"
+        }
+      ]
+    }
+  ]
+}
