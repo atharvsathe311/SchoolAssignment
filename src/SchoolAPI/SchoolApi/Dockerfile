@@ -8,10 +8,10 @@ USER app
 FROM --platform=$BUILDPLATFORM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 ARG configuration=Debug
 WORKDIR /src
-COPY ["SchoolAPI/SchoolApi/SchoolApi.csproj", "SchoolAPI/SchoolApi/"]
-RUN dotnet restore "SchoolAPI/SchoolApi/SchoolApi.csproj"
+COPY ["src/SchoolAPI/SchoolApi/SchoolApi.csproj", "SchoolAPI/SchoolApi/"]
+RUN dotnet restore "/src/SchoolAPI/SchoolApi/SchoolApi.csproj"
 COPY . .
-WORKDIR "/src/SchoolAPI/SchoolApi"
+WORKDIR "/src/src/SchoolAPI/SchoolApi"
 RUN dotnet build "SchoolApi.csproj" -c $configuration -o /app/build
 
 FROM build AS publish

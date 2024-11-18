@@ -9,10 +9,10 @@ USER app
 FROM --platform=$BUILDPLATFORM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 ARG configuration=Debug
 WORKDIR /src
-COPY ["Users/UserAPI/UserAPI.csproj", "Users/UserAPI/"]
-RUN dotnet restore "Users/UserAPI/UserAPI.csproj"
+COPY ["src/Users/UserAPI/UserAPI.csproj", "Users/UserAPI/"]
+RUN dotnet restore "/src/Users/UserAPI/UserAPI.csproj"
 COPY . .
-WORKDIR "/src/Users/UserAPI"
+WORKDIR "/src/src/Users/UserAPI"
 RUN dotnet build "UserAPI.csproj" -c $configuration -o /app/build
 
 FROM build AS publish

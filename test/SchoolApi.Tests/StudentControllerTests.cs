@@ -6,8 +6,8 @@ using SchoolAPI.DTO;
 using SchoolApi.Core.Models;
 using SchoolApi.Core.Repository;
 using SchoolApi.Core.Service;
-using SchoolAPI.Constants;
-using SchoolAPI.Exceptions;
+using CommonLibrary.Constants;
+using CommonLibrary.Exceptions;
 using SchoolApi.Core.Tests.Helper;
 
 public class StudentControllerTests

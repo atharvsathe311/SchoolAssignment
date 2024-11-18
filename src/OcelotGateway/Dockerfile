@@ -7,10 +7,10 @@ USER app
 FROM --platform=$BUILDPLATFORM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 ARG configuration=Debug
 WORKDIR /src
-COPY ["OcelotGateway/OcelotGateway.csproj", "OcelotGateway/"]
-RUN dotnet restore "OcelotGateway/OcelotGateway.csproj"
+COPY ["src/OcelotGateway/OcelotGateway.csproj", "OcelotGateway/"]
+RUN dotnet restore "/src/OcelotGateway/OcelotGateway.csproj"
 COPY . .
-WORKDIR "/src/OcelotGateway"
+WORKDIR "/src/src/OcelotGateway"
 RUN dotnet build "OcelotGateway.csproj" -c $configuration -o /app/build
 
 FROM build AS publish

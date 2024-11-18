@@ -100,6 +100,7 @@ namespace CommonLibrary.Constants
                 });
             });
         }
+        //Hardcoded Mostly in Program.cs
         public static void AddControllersWithFilters(this WebApplicationBuilder builder)
         {
             builder.Services.AddControllers(options =>
@@ -111,6 +112,7 @@ namespace CommonLibrary.Constants
                 options.SuppressModelStateInvalidFilter = true;
             });
         }
+        //In Program.cs
         public static void AddExceptionHandling(this WebApplicationBuilder builder)
         {
             builder.Services.AddExceptionHandler<GeneraliseExceptionHandler>();

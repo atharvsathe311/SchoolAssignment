@@ -1,24 +1,10 @@
-# version: '3.4'
-
-# services:
-#   schoolapi:
-#     image: schoolapi
-#     build:
-#       context: .
-#       dockerfile: SchoolAPI/SchoolApi/Dockerfile
-#     ports:
-#       - 5039:5039
-#     extra_hosts:
-#     - "host.docker.internal:host-gateway"
-
-
 version: '3.4'
 
 services:
   schoolapi:
     build:
       context: .
-      dockerfile: /SchoolAPI/SchoolApi/Dockerfile           
+      dockerfile: src/SchoolAPI/SchoolApi/Dockerfile           
     ports:
       - "5039:5039"
     networks:
@@ -27,7 +13,7 @@ services:
   userapi:
     build:
       context: .      
-      dockerfile: /Users/UserAPI/Dockerfile       
+      dockerfile: src/Users/UserAPI/Dockerfile       
     ports:
       - "5050:5050"
     networks:
@@ -36,7 +22,7 @@ services:
   ocelotgateway:
     build:
       context: .
-      dockerfile: /OcelotGateway/Dockerfile
+      dockerfile: src/OcelotGateway/Dockerfile
     ports:
       - "5273:5273"
     networks:
@@ -44,6 +30,8 @@ services:
     depends_on:
       - schoolapi
       - userapi
+    volumes:
+      - ./log:/app/log
 
 networks:
   gateway_network:

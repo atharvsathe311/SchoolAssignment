@@ -1,6 +1,6 @@
 using Bogus;
 using FluentValidation.TestHelper;
-using SchoolAPI.Constants;
+using CommonLibrary.Constants;
 using SchoolAPI.DTO;
 using SchoolAPI.Validators;
 
