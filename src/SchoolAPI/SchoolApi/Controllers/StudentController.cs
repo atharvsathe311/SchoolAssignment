@@ -8,6 +8,9 @@ using Microsoft.AspNetCore.Authorization;
 using CommonLibrary.GeneralModels;
 using CommonLibrary.Constants;
 using CommonLibrary.Exceptions;
+using SchoolApi.Helper;
+using SchoolApi.Core.Extensions;
+using System.Net.Mail;
 
 namespace SchoolAPI.Controllers
 {
@@ -22,12 +25,14 @@ namespace SchoolAPI.Controllers
         private readonly IStudentService _studentService;
         private readonly IStudentRepository _studentRepository;
         private readonly IMapper _mapper;
+        private readonly RabbitMQProducer _producer;
 
-        public StudentController(IStudentService studentService, IStudentRepository studentRepository, IMapper mapper)
+        public StudentController(IStudentService studentService, IStudentRepository studentRepository, IMapper mapper, RabbitMQProducer producer)
         {
             _studentService = studentService;
             _studentRepository = studentRepository;
             _mapper = mapper;
+            _producer = producer;
         }
 
         /// <summary>
@@ -62,6 +67,14 @@ namespace SchoolAPI.Controllers
 
             var createdStudent = await _studentRepository.CreateStudentAsync(student);
             var newStudentDTO = _mapper.Map<StudentGetDTO>(createdStudent);
+
+            EmailModel emailModel = new EmailModel {
+                Sender = "bankingcorporate011@gmail.com",
+                Recipient = newStudentDTO.Email,
+                Subject = "Student Registered",
+                Content = $"Dear {newStudentDTO.FirstName}  {newStudentDTO.LastName} , Your Student ID is : {newStudentDTO.StudentId}."
+            };
+            _producer.SendMessage(emailModel);
             return Ok(newStudentDTO);
         }
 

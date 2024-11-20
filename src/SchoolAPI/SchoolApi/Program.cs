@@ -5,7 +5,9 @@ using FluentValidation.AspNetCore;
 using SchoolApi.Core.Data;
 using SchoolApi.Core.Repository;
 using SchoolApi.Core.Service;
+using SchoolApi.Helper;
 using SchoolAPI.Helper;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -19,6 +21,10 @@ builder.AddSwaggerDocumentation("School API", "v1", "API for managing student re
 builder.AddCorsPolicy("AllowAll");
 builder.AddControllersWithFilters();
 builder.AddExceptionHandling();
+
+builder.Services.AddSingleton<RabbitMQProducer>();
+builder.Services.AddHostedService<RabbitMQConsumer>();
+
 
 builder.Services.AddAutoMapper(typeof(AutoMapperProfiles).Assembly);
 builder.Services.AddScoped<IStudentService, StudentService>();
