@@ -1,5 +1,3 @@
-using System.Net.Mail;
-
 namespace SchoolApi.Core.Extensions
 {
     public class EmailModel

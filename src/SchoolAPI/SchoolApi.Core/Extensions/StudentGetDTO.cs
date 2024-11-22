@@ -1,4 +1,4 @@
-﻿namespace SchoolAPI.DTO
+﻿namespace SchoolApi.Core.Extensions
 {
     public class StudentGetDTO
     {

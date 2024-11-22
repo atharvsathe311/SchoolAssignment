@@ -10,7 +10,6 @@ using CommonLibrary.Constants;
 using CommonLibrary.Exceptions;
 using SchoolApi.Helper;
 using SchoolApi.Core.Extensions;
-using System.Net.Mail;
 
 namespace SchoolAPI.Controllers
 {
@@ -68,13 +67,13 @@ namespace SchoolAPI.Controllers
             var createdStudent = await _studentRepository.CreateStudentAsync(student);
             var newStudentDTO = _mapper.Map<StudentGetDTO>(createdStudent);
 
-            EmailModel emailModel = new EmailModel {
-                Sender = "bankingcorporate011@gmail.com",
-                Recipient = newStudentDTO.Email,
-                Subject = "Student Registered",
-                Content = $"Dear {newStudentDTO.FirstName}  {newStudentDTO.LastName} , Your Student ID is : {newStudentDTO.StudentId}."
+            Event<StudentGetDTO> message = new()
+            {
+                EventType = EventType.StudentCreated,
+                Content = newStudentDTO
             };
-            _producer.SendMessage(emailModel);
+
+            _producer.SendMessage(message);
             return Ok(newStudentDTO);
         }
 
@@ -195,6 +194,13 @@ namespace SchoolAPI.Controllers
             {
                 oldStudent.Updated = DateTime.Now;
                 await _studentRepository.SaveChangesAsync();
+
+                Event<StudentGetDTO> message = new()
+                {
+                    EventType = EventType.StudentUpdated,
+                    Content = _mapper.Map<StudentGetDTO>(oldStudent)
+                };
+                _producer.SendMessage(message);
                 return Ok(_mapper.Map<StudentGetDTO>(oldStudent));
             }
             return BadRequest(ErrorMessages.NothingToUpdate);
@@ -224,6 +230,12 @@ namespace SchoolAPI.Controllers
             }
             oldStudent.IsActive = false;
             await _studentRepository.SaveChangesAsync();
+            Event<object> message = new()
+            {
+                EventType = EventType.StudentDeleted,
+                Content = _mapper.Map<StudentGetDTO>(oldStudent)
+            };
+            _producer.SendMessage(message);
             return Ok();
         }
     }

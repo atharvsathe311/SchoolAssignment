@@ -13,10 +13,12 @@ namespace SchoolApi.Core.Service
     public class RabbitMQConsumer : BackgroundService
     {
         private readonly IConfiguration _configuration;
+        private readonly IEmailService _emailService;
 
-        public RabbitMQConsumer(IConfiguration configuration)
+        public RabbitMQConsumer(IConfiguration configuration, IEmailService emailService)
         {
             _configuration = configuration;
+            _emailService = emailService;
         }
 
         protected override Task ExecuteAsync(CancellationToken stoppingToken)
@@ -33,12 +35,7 @@ namespace SchoolApi.Core.Service
             var channel = connection.CreateModel();
 
             var exchange = _configuration["RabbitMQ:Exchange"];
-            var queue = _configuration["RabbitMQ:Queue"];
-            var routingKey = _configuration["RabbitMQ:RoutingKey"];
-
-            channel.ExchangeDeclare(exchange, ExchangeType.Direct, true);
-            channel.QueueDeclare(queue, true, false, false, null);
-            channel.QueueBind(queue, exchange, routingKey, null);
+            var queue = _configuration["RabbitMQ:Queue1"];
 
             var consumer = new EventingBasicConsumer(channel);
             consumer.Received += (model, args) =>
@@ -46,11 +43,47 @@ namespace SchoolApi.Core.Service
                 var body = args.Body.ToArray();
                 var message = Encoding.UTF8.GetString(body);
 
-                var emailData = JsonConvert.DeserializeObject<EmailModel>(message);
-                if (emailData==null)
-                    throw new Exception("Null");
+                var data = JsonConvert.DeserializeObject<Event<StudentGetDTO>>(message) ?? throw new Exception("Null");
 
-                SendEmail(emailData);
+                if (data.EventType == EventType.StudentCreated)
+                {
+                    var email = new EmailModel
+                    {
+                        Sender = _configuration["Smtp:Username"],
+                        Recipient = data.Content.Email,
+                        Subject = "Student Registered",
+                        Content = $"Dear {data.Content.FirstName}  {data.Content.LastName} , Your Student ID is : {data.Content.StudentId}."
+                    };
+
+                    _emailService.SendEmail(email);
+                }
+
+                if (data.EventType == EventType.StudentUpdated)
+                {
+                    var email = new EmailModel
+                    {
+                        Sender = _configuration["Smtp:Username"],
+                        Recipient = data.Content.Email,
+                        Subject = "Student Updated",
+                        Content = $"Dear {data.Content.FirstName}  {data.Content.LastName} , Your Account has been updated"
+                    };
+
+                    _emailService.SendEmail(email);
+                }
+
+                
+                if (data.EventType == EventType.StudentDeleted)
+                {
+                    var email = new EmailModel
+                    {
+                        Sender = _configuration["Smtp:Username"],
+                        Recipient = data.Content.Email,
+                        Subject = "Student Registered",
+                        Content = $"Dear {data.Content.FirstName}  {data.Content.LastName} , Your account with Student ID is : {data.Content.StudentId} is Deleted."
+                    };
+
+                    _emailService.SendEmail(email);
+                }
 
                 Console.WriteLine($"Message Received: {message}");
                 channel.BasicAck(args.DeliveryTag, false);
@@ -60,32 +93,7 @@ namespace SchoolApi.Core.Service
             return Task.CompletedTask;
         }
 
-        private async void SendEmail(EmailModel emailData)
-        {
-            Console.WriteLine("Email Conf");
-            var smtpClient = new SmtpClient
-            {
-                DeliveryMethod = SmtpDeliveryMethod.Network,
-                UseDefaultCredentials = false,
-                Host = _configuration["Smtp:Server"],
-                Port = int.Parse(_configuration["Smtp:Port"]),
-                Credentials = new NetworkCredential(_configuration["Smtp:Username"], _configuration["Smtp:Password"]),
-                EnableSsl = true
-            };
 
-            var mailMessage = new MailMessage
-            {
-                From = new MailAddress (emailData.Sender,"Student Portal"),
-                Subject = emailData.Subject,
-                Body = emailData.Content,
-                IsBodyHtml = false
-            };
-
-            mailMessage.To.Add(emailData.Recipient);
-            Console.WriteLine("Sending Email...");
-            await smtpClient.SendMailAsync(mailMessage);
-            Console.WriteLine("Email Sent");
-        }
     }
 
 }

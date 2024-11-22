@@ -1,3 +1,5 @@
+using SchoolApi.Core.Extensions;
+
 namespace SchoolAPI.DTO
 {
     public class GetAllStudentsDTO
