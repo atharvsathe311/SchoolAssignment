@@ -58,6 +58,7 @@ builder.Services.AddHostedService<RabbitMQConsumer>();
 
 builder.Services.AddAutoMapper(typeof(AutoMapperProfiles).Assembly);
 builder.Services.AddScoped<IStudentService, StudentService>();
+builder.Services.AddSingleton<IEmailService,EmailService>();
 builder.Services.AddScoped<IStudentRepository, StudentRepository>();
 builder.Services.AddFluentValidationAutoValidation();
 builder.Services.AddValidatorsFromAssemblyContaining<Program>();
