@@ -59,6 +59,12 @@ namespace SchoolApi.Core.Repository
             await _schoolDbContext.SaveChangesAsync();
         }
 
+        public async Task DeleteStudent(Student student)
+        {
+            _schoolDbContext.Students.Remove(student);
+            await SaveChangesAsync();
+        }
+
         public async Task<bool> DuplicateEntriesChecker(Student student)
         {
             var studentList = await _schoolDbContext.Students.Where(s => s.Email == student.Email || s.Phone == student.Phone).ToListAsync();

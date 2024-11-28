@@ -2,6 +2,7 @@
 using SchoolAPI.DTO;
 using SchoolApi.Core.Models;
 using SchoolApi.Core.Extensions;
+using SchoolApi.DTO;
 
 namespace SchoolAPI.Helper
 {
@@ -12,6 +13,7 @@ namespace SchoolAPI.Helper
             CreateMap<Student, StudentPostDTO>().ReverseMap();
             CreateMap<Student, StudentGetDTO>().ReverseMap();
             CreateMap<Student, StudentUpdateDTO>().ReverseMap();
+            CreateMap<Student, NewSagaStudent>().ReverseMap();
         }
     }
 }

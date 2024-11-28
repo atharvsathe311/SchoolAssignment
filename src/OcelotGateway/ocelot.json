@@ -19,6 +19,21 @@
       "SwaggerKey": "schoolapi"
     },
     {
+      "DownstreamPathTemplate": "/StudentSaga/{everything}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "schoolapi",
+          "Port": 5039
+        }
+      ],
+      "UpstreamPathTemplate": "/infinity/service4/{everything}",
+      "UpstreamHttpMethod": [
+        "POST"
+      ],
+      "SwaggerKey": "schoolapi"
+    },
+    {
       "DownstreamPathTemplate": "/User/{everything}",
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [

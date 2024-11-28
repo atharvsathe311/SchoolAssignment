@@ -10,6 +10,8 @@ using CommonLibrary.Constants;
 using CommonLibrary.Exceptions;
 using SchoolApi.Helper;
 using SchoolApi.Core.Extensions;
+using Serilog;
+using Newtonsoft.Json;
 
 namespace SchoolAPI.Controllers
 {
@@ -18,20 +20,22 @@ namespace SchoolAPI.Controllers
     /// </summary>
     [Route("[controller]")]
     [ApiController]
-    [Authorize]
+    // [Authorize]
     public class StudentController : ControllerBase
     {
         private readonly IStudentService _studentService;
         private readonly IStudentRepository _studentRepository;
+        private readonly ICourseRepository _courseRepository;
         private readonly IMapper _mapper;
         private readonly RabbitMQProducer _producer;
 
-        public StudentController(IStudentService studentService, IStudentRepository studentRepository, IMapper mapper, RabbitMQProducer producer)
+        public StudentController(IStudentService studentService, IStudentRepository studentRepository, IMapper mapper, RabbitMQProducer producer, ICourseRepository courseRepository)
         {
             _studentService = studentService;
             _studentRepository = studentRepository;
             _mapper = mapper;
             _producer = producer;
+            _courseRepository = courseRepository;
         }
 
         /// <summary>
@@ -45,7 +49,7 @@ namespace SchoolAPI.Controllers
         /// <response code="403">Forbidden - User does not have the required role.</response>
         /// <response code="500">An internal server error occurred.</response>
         [HttpPost]
-        [Authorize(Roles = UserRoles.Admin)]
+        // [Authorize(Roles = UserRoles.Admin)]
         [ProducesResponseType(typeof(StudentGetDTO), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ErrorDetails), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -216,7 +220,7 @@ namespace SchoolAPI.Controllers
         /// <response code="403">Forbidden - User does not have the required role.</response>
         /// <response code="404">The student with the given ID was not found.</response>
         [HttpDelete("{id}")]
-        [Authorize(Roles = UserRoles.Admin)]
+        // [Authorize(Roles = UserRoles.Admin)]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
@@ -236,6 +240,66 @@ namespace SchoolAPI.Controllers
                 Content = _mapper.Map<StudentGetDTO>(oldStudent)
             };
             _producer.SendMessage(message);
+            return Ok();
+        }
+
+        [HttpPut("enrol-courses/{id}")]
+        public async Task<IActionResult> EnrolCourses(int id, List<int> courseIds)
+        {
+            var oldStudent = await _studentRepository.GetStudentByIdAsync(id);
+            if (oldStudent == null)
+            {
+                return NotFound(ErrorMessages.StudentNotFoundExceptionDetails);
+            }
+
+            List<Course> courses = [];
+            foreach (int courseId in courseIds)
+            {
+                var course = await _courseRepository.GetCourseByIdAsync(courseId);
+
+                if (course == null)
+                {
+                    BadRequest($"Course with ID {courseId} does not exist.");
+                }
+                courses.Add(course);
+                }
+            Log.Logger.Information(JsonConvert.SerializeObject(courses));
+            oldStudent.Courses = courses ;
+            await _studentRepository.SaveChangesAsync();
+            return Ok();
+        }
+
+        [HttpPut("update-payment-status/{id}")]
+        public async Task<IActionResult> UpdatePaymentStatus(int id)
+        {
+            var oldStudent = await _studentRepository.GetStudentByIdAsync(id);
+            if (oldStudent == null)
+            {
+                return NotFound(ErrorMessages.StudentNotFoundExceptionDetails);
+            }
+
+            oldStudent.PaymentStatus = true;
+            await _studentRepository.SaveChangesAsync();
+            return Ok();
+        }
+
+        [HttpPost("create-course")]
+        public async Task<IActionResult> CreateCourse(Course course)
+        {
+            var createdCourse = await _courseRepository.CreateCourseAsync(course);
+            return Ok(createdCourse);
+        }
+
+        [HttpDelete("delete-student/{id}")]
+        public async Task<IActionResult> DeleteStudent(int id)
+        {
+            var oldStudent = await _studentRepository.GetStudentByIdAsync(id);
+            if (oldStudent == null)
+            {
+                return NotFound(ErrorMessages.StudentNotFoundExceptionDetails);
+            }
+            
+            await _studentRepository.DeleteStudent(oldStudent);
             return Ok();
         }
     }

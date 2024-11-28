@@ -9,6 +9,7 @@ namespace SchoolApi.Core.Repository
         Task<(IEnumerable<Student>, int count)> GetAllStudentAsync(int page, int pageSize, string searchTerm);
         Task<Student?> GetStudentByIdAsync(int studentId);
         Task SaveChangesAsync();
+        Task DeleteStudent(Student student);
         Task<bool> DuplicateEntriesChecker(Student student);
 
     }
