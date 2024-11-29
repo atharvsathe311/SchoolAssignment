@@ -7,10 +7,10 @@ namespace CommonLibrary.Constants
         public const string ValidationError = "Invalid Inputs";
         public const string USER_NOT_FOUND = "User Not Found.";
         public const string STUDENT_NOT_FOUND = "Student Not Found.";
-        public const string STUDENT_EXISTS = "Student Already Exist";  
+        public const string STUDENT_EXISTS = "Student Already Exist";
         public const string USER_CREATE_FAILED = "Failed to create user.";
         public const string NOTHING_TO_UPDATE = "Nothing to Update.";
-        public const string USER_EXISTS = "User Already Exist";         
+        public const string USER_EXISTS = "User Already Exist";
         public const string INTERNAL_SERVER_ERROR = "Internal Server Error !";
         public const string FIRST_NAME_REQUIRED = "FirstName is Required";
         public const string FIRST_NAME_MIN_LENGTH = "FirstName must be at least 2 Characters";
@@ -27,44 +27,49 @@ namespace CommonLibrary.Constants
         public const string USERNAME_VALIDATION = "Username must contain at least one letter, one number, and be at least 6 characters long.";
         public const string PASSWORD_VALIDATION = "Password must be at least 8 characters long and contain at least one letter, one number, and one special character.";
         public const string INVALID_CREDENTIALS = "Invalid Credentials.";
-        public static ErrorDetails UserNotFoundExceptionDetails =  new ErrorDetails() 
+        public static ErrorDetails UserNotFoundExceptionDetails = new ErrorDetails()
         {
-            Message = USER_NOT_FOUND ,
+            Message = USER_NOT_FOUND,
             StatusCode = StatusCodes.Status404NotFound
         };
-        public static ErrorDetails UserExistsExceptionDetails =  new ErrorDetails() 
+        public static ErrorDetails StudentCreationFailedExceptionDetails = new ErrorDetails()
         {
-            Message = USER_NOT_FOUND ,
+            Message = USER_CREATE_FAILED,
+            StatusCode = StatusCodes.Status404NotFound
+        };
+        public static ErrorDetails UserExistsExceptionDetails = new ErrorDetails()
+        {
+            Message = USER_NOT_FOUND,
             StatusCode = StatusCodes.Status400BadRequest
         };
-        public static ErrorDetails NothingToUpdate =  new ErrorDetails() 
+        public static ErrorDetails NothingToUpdate = new ErrorDetails()
         {
-            Message = NOTHING_TO_UPDATE ,
+            Message = NOTHING_TO_UPDATE,
             StatusCode = StatusCodes.Status400BadRequest
         };
-        public static ErrorDetails InvalidCredentialsExceptionDetails =  new ErrorDetails() 
+        public static ErrorDetails InvalidCredentialsExceptionDetails = new ErrorDetails()
         {
             Message = INVALID_CREDENTIALS,
             StatusCode = StatusCodes.Status400BadRequest
         };
 
-        public static ErrorDetails StudentNotFoundExceptionDetails =  new ErrorDetails() 
+        public static ErrorDetails StudentNotFoundExceptionDetails = new ErrorDetails()
         {
-            Message = STUDENT_NOT_FOUND ,
+            Message = STUDENT_NOT_FOUND,
             StatusCode = StatusCodes.Status404NotFound
         };
 
-        public static ErrorDetails StudentExistsExceptionDetails =  new ErrorDetails() 
+        public static ErrorDetails StudentExistsExceptionDetails = new ErrorDetails()
         {
-            Message = STUDENT_EXISTS ,
+            Message = STUDENT_EXISTS,
             StatusCode = StatusCodes.Status400BadRequest
         };
         public const string BIRTH_DATE_REQUIRED = "BirthDate is required";
         public const string INVALID_BIRTH_DATE = "Invalid BirthDate";
 
-        
 
-        
+
+
 
     }
 }

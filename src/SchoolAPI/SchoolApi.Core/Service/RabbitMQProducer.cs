@@ -1,9 +1,10 @@
 using System.Text;
+using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using RabbitMQ.Client;
 using SchoolApi.Core.Extensions;
 
-namespace SchoolApi.Helper
+namespace SchoolApi.Core.Service
 {
     public class RabbitMQProducer
     {

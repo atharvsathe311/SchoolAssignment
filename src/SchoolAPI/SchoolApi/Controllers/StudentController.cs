@@ -8,10 +8,8 @@ using Microsoft.AspNetCore.Authorization;
 using CommonLibrary.GeneralModels;
 using CommonLibrary.Constants;
 using CommonLibrary.Exceptions;
-using SchoolApi.Helper;
 using SchoolApi.Core.Extensions;
-using Serilog;
-using Newtonsoft.Json;
+using SchoolApi.DTO;
 
 namespace SchoolAPI.Controllers
 {
@@ -28,7 +26,6 @@ namespace SchoolAPI.Controllers
         private readonly ICourseRepository _courseRepository;
         private readonly IMapper _mapper;
         private readonly RabbitMQProducer _producer;
-
         public StudentController(IStudentService studentService, IStudentRepository studentRepository, IMapper mapper, RabbitMQProducer producer, ICourseRepository courseRepository)
         {
             _studentService = studentService;
@@ -41,7 +38,7 @@ namespace SchoolAPI.Controllers
         /// <summary>
         /// Adds a new student to the system.
         /// </summary>
-        /// <param name="studentPostDTO">The student data to be added.</param>
+        /// <param name="newSagaStudent">The student data to be added.</param>
         /// <returns>An <see cref="ActionResult"/> representing the created student data.</returns>
         /// <response code="200">The student was successfully created.</response>
         /// <response code="400">The student already exists in the system.</response>
@@ -55,8 +52,10 @@ namespace SchoolAPI.Controllers
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> Post(StudentPostDTO studentPostDTO)
+        public async Task<IActionResult> Post(NewSagaStudent newSagaStudent)
         {
+            var studentPostDTO = newSagaStudent.Student;
+
             var student = _mapper.Map<Student>(studentPostDTO);
 
             bool duplicateCheck = await _studentRepository.DuplicateEntriesChecker(student);
@@ -70,14 +69,20 @@ namespace SchoolAPI.Controllers
 
             var createdStudent = await _studentRepository.CreateStudentAsync(student);
             var newStudentDTO = _mapper.Map<StudentGetDTO>(createdStudent);
+            var eventContent = new CreateStudentEventDTO() { Student = newStudentDTO, StudentIds = newSagaStudent.CourseIds };
 
-            Event<StudentGetDTO> message = new()
+            Event<CreateStudentEventDTO> message = new()
             {
                 EventType = EventType.StudentCreated,
-                Content = newStudentDTO
+                Content = eventContent
             };
-
+            
             _producer.SendMessage(message);
+            bool status = await _studentService.GetStudentStatusAsync();
+
+            if (!status)
+                return BadRequest(ErrorMessages.StudentCreationFailedExceptionDetails);
+                
             return Ok(newStudentDTO);
         }
 
@@ -242,65 +247,12 @@ namespace SchoolAPI.Controllers
             _producer.SendMessage(message);
             return Ok();
         }
-
-        [HttpPut("enrol-courses/{id}")]
-        public async Task<IActionResult> EnrolCourses(int id, List<int> courseIds)
-        {
-            var oldStudent = await _studentRepository.GetStudentByIdAsync(id);
-            if (oldStudent == null)
-            {
-                return NotFound(ErrorMessages.StudentNotFoundExceptionDetails);
-            }
-
-            List<Course> courses = [];
-            foreach (int courseId in courseIds)
-            {
-                var course = await _courseRepository.GetCourseByIdAsync(courseId);
-
-                if (course == null)
-                {
-                    BadRequest($"Course with ID {courseId} does not exist.");
-                }
-                courses.Add(course);
-                }
-            Log.Logger.Information(JsonConvert.SerializeObject(courses));
-            oldStudent.Courses = courses ;
-            await _studentRepository.SaveChangesAsync();
-            return Ok();
-        }
-
-        [HttpPut("update-payment-status/{id}")]
-        public async Task<IActionResult> UpdatePaymentStatus(int id)
-        {
-            var oldStudent = await _studentRepository.GetStudentByIdAsync(id);
-            if (oldStudent == null)
-            {
-                return NotFound(ErrorMessages.StudentNotFoundExceptionDetails);
-            }
-
-            oldStudent.PaymentStatus = true;
-            await _studentRepository.SaveChangesAsync();
-            return Ok();
-        }
-
+        
         [HttpPost("create-course")]
         public async Task<IActionResult> CreateCourse(Course course)
         {
             var createdCourse = await _courseRepository.CreateCourseAsync(course);
             return Ok(createdCourse);
-        }
-
-        [HttpDelete("delete-student/{id}")]
-        public async Task<IActionResult> DeleteStudent(int id)
-        {
-            var oldStudent = await _studentRepository.GetStudentByIdAsync(id);
-            if (oldStudent == null)
-            {
-                return NotFound(ErrorMessages.StudentNotFoundExceptionDetails);
-            }
-            
-            await _studentRepository.DeleteStudent(oldStudent);
-            return Ok();
         }
     }
 }
