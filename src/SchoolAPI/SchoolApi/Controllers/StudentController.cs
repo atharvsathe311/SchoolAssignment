@@ -18,7 +18,7 @@ namespace SchoolAPI.Controllers
     /// </summary>
     [Route("[controller]")]
     [ApiController]
-    // [Authorize]
+    [Authorize]
     public class StudentController : ControllerBase
     {
         private readonly IStudentService _studentService;
@@ -46,7 +46,7 @@ namespace SchoolAPI.Controllers
         /// <response code="403">Forbidden - User does not have the required role.</response>
         /// <response code="500">An internal server error occurred.</response>
         [HttpPost]
-        // [Authorize(Roles = UserRoles.Admin)]
+        [Authorize(Roles = UserRoles.Admin)]
         [ProducesResponseType(typeof(StudentGetDTO), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ErrorDetails), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -61,14 +61,14 @@ namespace SchoolAPI.Controllers
             bool duplicateCheck = await _studentRepository.DuplicateEntriesChecker(student);
             if (duplicateCheck)
                 throw new CustomException(ErrorMessages.StudentExistsExceptionDetails);
-
-            student.Age = _studentService.GetAge(studentPostDTO.BirthDate);
             student.Created = DateTime.Now;
+
             student.Updated = DateTime.Now;
             student.IsActive = true;
 
             var createdStudent = await _studentRepository.CreateStudentAsync(student);
             var newStudentDTO = _mapper.Map<StudentGetDTO>(createdStudent);
+            newStudentDTO.Age = _studentService.GetAge(studentPostDTO.BirthDate);
             var eventContent = new CreateStudentEventDTO() { Student = newStudentDTO, StudentIds = newSagaStudent.CourseIds };
 
             Event<CreateStudentEventDTO> message = new()
@@ -76,13 +76,13 @@ namespace SchoolAPI.Controllers
                 EventType = EventType.StudentCreated,
                 Content = eventContent
             };
-            
+
             _producer.SendMessage(message);
             bool status = await _studentService.GetStudentStatusAsync();
 
             if (!status)
                 return BadRequest(ErrorMessages.StudentCreationFailedExceptionDetails);
-                
+
             return Ok(newStudentDTO);
         }
 
@@ -106,6 +106,11 @@ namespace SchoolAPI.Controllers
         {
             var (studentList, count) = await _studentRepository.GetAllStudentAsync(page, pageSize, searchTerm);
             IEnumerable<StudentGetDTO> newStudentList = _mapper.Map<IEnumerable<StudentGetDTO>>(studentList);
+
+            foreach (StudentGetDTO student in newStudentList)
+            {
+                student.Age = _studentService.GetAge(student.BirthDate);
+            }
 
             GetAllStudentsDTO getAllStudents = new()
             {
@@ -138,6 +143,8 @@ namespace SchoolAPI.Controllers
                 return NotFound(ErrorMessages.StudentNotFoundExceptionDetails);
             }
             var studentDTO = _mapper.Map<StudentGetDTO>(student);
+            studentDTO.Age = _studentService.GetAge(studentDTO.BirthDate);
+
             return Ok(studentDTO);
         }
 
@@ -183,7 +190,6 @@ namespace SchoolAPI.Controllers
             if (student.BirthDate.HasValue)
             {
                 oldStudent.BirthDate = (DateTime)student.BirthDate;
-                oldStudent.Age = _studentService.GetAge((DateTime)student.BirthDate);
                 isUpdated = true;
             }
 
@@ -204,13 +210,16 @@ namespace SchoolAPI.Controllers
                 oldStudent.Updated = DateTime.Now;
                 await _studentRepository.SaveChangesAsync();
 
+                var studentGetDTO = _mapper.Map<StudentGetDTO>(oldStudent);
+                studentGetDTO.Age = _studentService.GetAge(studentGetDTO.BirthDate);
+
                 Event<StudentGetDTO> message = new()
                 {
                     EventType = EventType.StudentUpdated,
-                    Content = _mapper.Map<StudentGetDTO>(oldStudent)
+                    Content = studentGetDTO
                 };
                 _producer.SendMessage(message);
-                return Ok(_mapper.Map<StudentGetDTO>(oldStudent));
+                return Ok(studentGetDTO);
             }
             return BadRequest(ErrorMessages.NothingToUpdate);
         }
@@ -225,7 +234,7 @@ namespace SchoolAPI.Controllers
         /// <response code="403">Forbidden - User does not have the required role.</response>
         /// <response code="404">The student with the given ID was not found.</response>
         [HttpDelete("{id}")]
-        // [Authorize(Roles = UserRoles.Admin)]
+        [Authorize(Roles = UserRoles.Admin)]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
@@ -239,16 +248,20 @@ namespace SchoolAPI.Controllers
             }
             oldStudent.IsActive = false;
             await _studentRepository.SaveChangesAsync();
+            var studentGetDTO = _mapper.Map<StudentGetDTO>(oldStudent);
+            studentGetDTO.Age = _studentService.GetAge(studentGetDTO.BirthDate);
+
             Event<object> message = new()
             {
                 EventType = EventType.StudentDeleted,
-                Content = _mapper.Map<StudentGetDTO>(oldStudent)
+                Content = studentGetDTO
             };
             _producer.SendMessage(message);
             return Ok();
         }
-        
+
         [HttpPost("create-course")]
+        [Authorize(Roles = UserRoles.Admin)]
         public async Task<IActionResult> CreateCourse(Course course)
         {
             var createdCourse = await _courseRepository.CreateCourseAsync(course);

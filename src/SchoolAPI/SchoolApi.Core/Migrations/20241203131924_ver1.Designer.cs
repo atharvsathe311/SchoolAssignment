@@ -12,7 +12,7 @@ using SchoolApi.Core.Data;
 namespace SchoolApi.Core.Migrations
 {
     [DbContext(typeof(SchoolDbContext))]
-    [Migration("20241127095501_ver1")]
+    [Migration("20241203131924_ver1")]
     partial class ver1
     {
         /// <inheritdoc />
@@ -68,9 +68,6 @@ namespace SchoolApi.Core.Migrations
                         .HasColumnType("int");
 
                     MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("StudentId"));
-
-                    b.Property<int>("Age")
-                        .HasColumnType("int");
 
                     b.Property<DateTime?>("BirthDate")
                         .HasColumnType("datetime(6)");

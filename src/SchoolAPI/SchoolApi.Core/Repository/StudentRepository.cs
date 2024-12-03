@@ -32,8 +32,7 @@ namespace SchoolApi.Core.Repository
             {
                 query = query.Where(s => (s.FirstName.Contains(searchTerm) ||
                                            s.LastName.Contains(searchTerm) ||
-                                           s.Email.Contains(searchTerm) ||
-                                           s.Age.ToString().Contains(searchTerm)) 
+                                           s.Email.Contains(searchTerm)) 
                                            && s.IsActive == true);
             }
 
